@@ -1,8 +1,4 @@
-print("Hello Penisss")
-var1 = input("How big is your cock?")
-print("Very big: " + var1)
-print("coolääää")
-Dicksizes_class2i[10,9,15,16]
+
 
 
 

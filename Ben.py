@@ -5,7 +5,11 @@ pygame.init()
 screen = pygame.display.set_mode((640, 640))
 
 sound = pygame.mixer.Sound("Bust.mp3")
+
 sound.set_volume(0.5)
+
+sound.set_volume(1)
+
 
 
 lambopic = pygame.image.load("Lambo2.png").convert_alpha()

@@ -1,4 +1,5 @@
 import pygame, sys
+from pygame.constants import QUIT
 
 from pygame.locals import *
 

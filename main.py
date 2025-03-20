@@ -6,6 +6,11 @@ def scale_image(img, factor):
     size = round(img.get_width() * factor), round(img.get_height() * factor)
     return pygame.transform.scale(img, size)
 
+def blit_rotate_center(win, image, top_left, angle):
+    rotated_image = pygame.transfor.rotate(image, angle)
+    new_rect = rotated_image.get_rect(center=image.get_rect(topleft = top_left).center)
+    win.blit(rotated_image, new_rect.topleft)
+
 
 FINISH = pygame.image.load("finish.png")
 GCAR = scale_image(pygame.image.load("green-car.png"), 0.8)
@@ -22,6 +27,22 @@ WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Car go vroom vroom 3")
 
 FPS = 60
+
+class AbstractCar:
+    def _init_(self, max_vel, rotation_vel):
+        self.max_vel = max_vel
+        self.vel = 0
+        self.rotation_vel = rotation_vel
+        self.angle = 0
+
+    def rotate(self, left=False, right=False):
+        if left:
+            self.angle += self.rotation_vel
+        elif right:
+            self.angle -= self.rotation_vel
+
+
+
 
 def draw(win, images):
     for img, pos in images:

@@ -10,7 +10,7 @@ sound = pygame.mixer.Sound("forward-312979.mp3")
 HOCH = 500
 BREIT = 500
 
-FENSTER = pygame.display.set_mode((HOCH, BREIT), 32, 0)
+FENSTER = pygame.display.set_mode((HOCH, BREIT))
 
 
 

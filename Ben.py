@@ -5,7 +5,7 @@ pygame.init()
 screen = pygame.display.set_mode((640, 640))
 
 sound = pygame.mixer.Sound("Bust.mp3")
-sound.set_volume(0.1)
+sound.set_volume(0.5)
 
 
 lambopic = pygame.image.load("Lambo2.png").convert_alpha()
@@ -13,14 +13,14 @@ lambopic = pygame.image.load("Lambo2.png").convert_alpha()
 lambopic = pygame.transform.scale_by(lambopic,0.3)
 
 font = pygame.font.Font(None, size=40 )
-
+sound.play()
 x = 640
 clock = pygame.time.Clock()
 
 running = True
 while running:
 
-    sound.play()
+
 
     screen.fill((0,0,0))
 
@@ -43,4 +43,15 @@ while running:
     clock.tick(60)
 
 pygame.quit()
+
+
+
+
+
+
+
+
+
+
+
 

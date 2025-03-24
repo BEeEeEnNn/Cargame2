@@ -109,14 +109,14 @@ while running:
     keys = pygame.key.get_pressed()
     moved = False
 
-    if keys[pygame.K_a]:
+    if keys[pygame.K_a] or keys[pygame.K_LEFT]:
         player_car.rotate(left=True)
-    if keys[pygame.K_d]:
+    if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
         player_car.rotate(right=True)
-    if keys[pygame.K_w]:
+    if keys[pygame.K_w] or keys[pygame.K_UP]:
         moved = True
         player_car.move_forward()
-    if keys[pygame.K_s]:
+    if keys[pygame.K_s] or keys[pygame.K_SPACE] or keys[pygame.K_DOWN]:
         moved = True
         player_car.move_backward()
 

@@ -13,15 +13,19 @@ def blit_rotate_center(win, image, top_left, angle):
     win.blit(rotated_image, new_rect.topleft)
 
 #Alle Bilder importiert
-FINISH = pygame.image.load("Sprites/finish.png")
+FINISH = scale_image(pygame.image.load("Sprites/finish.png"),1.08)
+FINISH_POSITION = (99, 325)
+FINISH_MASK = pygame.mask.from_surface(FINISH)
+
 GCAR = scale_image(pygame.image.load("Sprites/green-car.png"), 0.8)
 BORDERS = pygame.image.load("Sprites/Borders-Photoroom.png")
 GRASS = scale_image(pygame.image.load("Sprites/grass.jpg"), 2.5)
 PCAR = scale_image(pygame.image.load("Sprites/purple-car.png"), 0.8)
-RCAR = scale_image(pygame.image.load("Sprites/red-car.png"), 0.8)
+RCAR = scale_image(pygame.image.load("Sprites/red-car.png"), 0.7)
 WCAR = scale_image(pygame.image.load("Sprites/white-car.png"), 0.8)
 TRACK = pygame.image.load("Sprites/Track-Photoroom.png")
 
+TRACK_BORDER_MASK = pygame.mask.from_surface(BORDERS)
 
 WIDTH, HEIGHT = TRACK.get_width(), TRACK.get_height()
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -69,18 +73,29 @@ class AbstractCar:
         self.vel = max(self.vel - self.acceleration/2, 0)
         self.move()
 
+    def collide(self, mask, x=0, y=0):
+        car_mask = pygame.mask.from_surface(self.img)
+        offset = (int(self.x - x), int(self.y - y))
+        point_of_intersection = mask.overlap(car_mask, offset)
+        return point_of_intersection
+
+    def reset(self):
+        self.x, self.y = self.START_POS
+        self.angle = 0
+        self.vel = 0
+
 
 class PlayerCar(AbstractCar):
     IMG = RCAR
-    START_POS = (180, 200)
+    START_POS = (142, 270)
 
     def reduce_speed(self):
         self.vel = max(self.vel - self.acceleration/2, 0)
         self.move()
 
-
-
-
+    def bounce(self):
+        self.vel = - self.vel/1.5
+        self.move()
 
 def draw(win, images, player_car):
     for img, pos in images:
@@ -90,11 +105,10 @@ def draw(win, images, player_car):
 
 running = True
 clock = pygame.time.Clock()
-images = [(GRASS, (0,0)), (TRACK, (0,0))]
+images = [(GRASS, (0,0)), (TRACK, (0,0)), (FINISH, FINISH_POSITION), (BORDERS, (0,0))]
 player_car = PlayerCar(4, 2)
 
 while running:
-
 
     clock.tick(FPS)
 
@@ -108,7 +122,6 @@ while running:
 
     keys = pygame.key.get_pressed()
     moved = False
-
     if keys[pygame.K_a] or keys[pygame.K_LEFT]:
         player_car.rotate(left=True)
     if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
@@ -116,12 +129,24 @@ while running:
     if keys[pygame.K_w] or keys[pygame.K_UP]:
         moved = True
         player_car.move_forward()
-    if keys[pygame.K_s] or keys[pygame.K_SPACE] or keys[pygame.K_DOWN]:
+    if keys[pygame.K_s] or keys[pygame.K_SPACE]:
         moved = True
         player_car.move_backward()
 
     if not moved:
         player_car.reduce_speed()
+
+    if player_car.collide(TRACK_BORDER_MASK) != None:
+        player_car.bounce()
+
+    finish_point_of_collision = player_car.collide(FINISH_MASK, *FINISH_POSITION)
+    if finish_point_of_collision != None:
+        if finish_point_of_collision[1] == 0:
+            player_car.bounce()
+        else:
+            player_car.reset()
+
+
 
 pygame.quit()
 

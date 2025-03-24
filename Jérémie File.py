@@ -5,7 +5,7 @@ from pygame.locals import *
 
 pygame.init()
 
-sound = pygame.mixer.Sound("forward-312979.mp3")
+sound = pygame.mixer.Sound("Audio/forward-312979.mp3")
 
 
 HOCH = 500
@@ -18,10 +18,10 @@ FENSTER = pygame.display.set_mode((HOCH, BREIT))
 White = (255, 255, 255)
 
 
-Spielerbild = pygame.image.load("Lego-Man-PNG-Image.png").convert_alpha()
+Spielerbild = pygame.image.load("Sprites/Lego-Man-PNG-Image.png").convert_alpha()
 Spielerbild = pygame.transform.scale_by(Spielerbild, 0.3)
 
-Sprechblase = pygame.image.load("OIP.jpg").convert_alpha()
+Sprechblase = pygame.image.load("Sprites/OIP.jpg").convert_alpha()
 Sprechblase = pygame.transform.scale_by(Sprechblase, 0.3)
 
 

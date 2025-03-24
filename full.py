@@ -11,13 +11,13 @@ def blit_rotate_center(win, image, top_left, angle):
     new_rect = rotated_image.get_rect(center=image.get_rect(topleft = top_left).center)
     win.blit(rotated_image, new_rect.topleft)
 
-GRASS = scale_image(pygame.image.load("grass.jpg"), 2.5)
-TRACK = scale_image(pygame.image.load("Track-Photoroom.png"), 0.9)
+GRASS = scale_image(pygame.image.load("Sprites/grass.jpg"), 2.5)
+TRACK = scale_image(pygame.image.load("Sprites/Track-Photoroom.png"), 0.9)
 
-TRACK_BORDER = scale_image(pygame.image.load("Borders-Photoroom.png"), 0.9)
+TRACK_BORDER = scale_image(pygame.image.load("Sprites/Borders-Photoroom.png"), 0.9)
 
-RED_CAR = scale_image(pygame.image.load("red-car.png"), 0.55)
-GREEN_CAR = scale_image(pygame.image.load("green-car.png"), 0.55)
+RED_CAR = scale_image(pygame.image.load("Sprites/red-car.png"), 0.55)
+GREEN_CAR = scale_image(pygame.image.load("Sprites/green-car.png"), 0.55)
 
 WIDTH, HEIGHT = TRACK.get_width(), TRACK.get_height()
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))

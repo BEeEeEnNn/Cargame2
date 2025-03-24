@@ -12,7 +12,7 @@ def blit_rotate_center(win, image, top_left, angle):
     new_rect = rotated_image.get_rect(center=image.get_rect(topleft = top_left).center)
     win.blit(rotated_image, new_rect.topleft)
 
-
+#Alle Bilder importiert
 FINISH = pygame.image.load("finish.png")
 GCAR = scale_image(pygame.image.load("green-car.png"), 0.8)
 BORDERS = pygame.image.load("Borders-Photoroom.png")
@@ -74,9 +74,6 @@ while running:
     clock.tick(FPS)
 
     draw(WIN, images, player_car)
-
-
-
 
 
     for event in pygame.event.get():

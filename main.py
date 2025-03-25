@@ -50,16 +50,31 @@ class AbstractCar:
         elif right:
             self.angle -= self.rotation_vel
 
+#ChatGPT
+    def get_mask(self):
+        rotated_image = pygame.transform.rotate(self.img, self.angle)
+        return pygame.mask.from_surface(rotated_image)
+
+
     def draw(self, win, ):
         blit_rotate_center(win, self.img, (self.x, self.y), self.angle)
+
+        # DEBUG: Kollisionmaske des Autos zeichnen
+
+        car_mask_surface = player_car.get_mask().to_surface(setcolor=(255, 0, 0, 100), unsetcolor=(0, 0, 0, 0))
+        win.blit(car_mask_surface, (int(player_car.x), int(player_car.y)))
+
+    pygame.display.update()
 
     def move_forward(self):
         self.vel = min(self.vel + self.acceleration, self.max_vel)
         self.move()
 
+
     def move_backward(self):
         self.vel = max(self.vel - self.acceleration, -self.max_vel/2)
         self.move()
+
 
     def move(self):
         radians = math.radians(self.angle)
@@ -69,15 +84,18 @@ class AbstractCar:
         self.y -= vertical
         self.x -= horizontal
 
+
     def reduce_speed(self):
         self.vel = max(self.vel - self.acceleration/2, 0)
         self.move()
 
+
     def collide(self, mask, x=0, y=0):
-        car_mask = pygame.mask.from_surface(self.img)
+        car_mask = self.get_mask() #ChatGPT
         offset = (int(self.x - x), int(self.y - y))
         point_of_intersection = mask.overlap(car_mask, offset)
         return point_of_intersection
+
 
     def reset(self):
         self.x, self.y = self.START_POS

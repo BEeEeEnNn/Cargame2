@@ -121,23 +121,19 @@ while running:
             break
 
     keys = pygame.key.get_pressed()
+
     moved = False
-    if keys[pygame.K_a]:
+    if keys[pygame.K_a] or keys[pygame.K_LEFT]:
         player_car.rotate(left=True)
-    if keys[pygame.K_d]:
+    if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
         player_car.rotate(right=True)
-    if keys[pygame.K_w]:
-        moved = True
-        player_car.move_forward()
-    if keys[pygame.K_s]:
+    if keys[pygame.K_w] or keys[pygame.K_UP]:
+        if not keys[pygame.K_s] and not keys[pygame.K_SPACE]:  # Prüft, ob S nicht gedrückt wird
+            moved = True
+            player_car.move_forward()
+    elif keys[pygame.K_s] or keys[pygame.K_SPACE]:  # Benutze elif, um zu verhindern, dass beide aktiv sind
         moved = True
         player_car.move_backward()
-    elif keys[pygame.K_w] and keys[pygame.K_s]:
-        moved = True
-        player_car.reduce_speed()
-
-
-
 
     if not moved:
         player_car.reduce_speed()

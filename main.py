@@ -34,6 +34,7 @@ pygame.display.set_caption("Car go vroom vroom 3")
 
 FPS = 60
 
+can_collide = True
 class AbstractCar:
 
     def __init__(self, max_vel, rotation_vel):
@@ -44,6 +45,9 @@ class AbstractCar:
         self.angle = 0
         self.x, self.y = self.START_POS
         self.acceleration = 0.1
+        self.tleft = (0, 0)
+
+
 
     def rotate(self, left=False, right=False):
         if left:
@@ -59,10 +63,10 @@ class AbstractCar:
 
 
     def draw(self, win, ):
-        tleft = blit_rotate_center(win, self.img, (self.x, self.y), self.angle)
+        self.tleft = blit_rotate_center(win, self.img, (self.x, self.y), self.angle)
         # DEBUG: Kollisionmaske des Autos zeichnen
         car_mask_surface = self.get_mask().to_surface(setcolor=(255, 0, 0, 100), unsetcolor=(0, 0, 0, 0))
-        win.blit(car_mask_surface, tleft)
+        win.blit(car_mask_surface, self.tleft)
 
     pygame.display.update()
 
@@ -92,7 +96,9 @@ class AbstractCar:
 
     def collide(self, mask, x=0, y=0):
         car_mask = self.get_mask() #ChatGPT
-        point_of_intersection = mask.overlap(car_mask, (100,50))
+        pygame.mask.Mask.scale(car_mask, (0.75, 0.75))
+        offset = (int(self.tleft[0] - x), int(self.tleft[1] - y))
+        point_of_intersection = mask.overlap(car_mask, offset)
         return point_of_intersection
 
 
@@ -106,14 +112,30 @@ class PlayerCar(AbstractCar):
     IMG = RCAR
     START_POS = (142, 270)
 
+
+    #CHAT
+    def __init__(self, max_vel, rotation_vel):
+        super().__init__(max_vel, rotation_vel)
+        self.last_collision_time = 0
+
+     #CHAT
+    def handle_collision(self, mask):
+        if time.time() - self.last_collision_time > 0.1:  # 200ms cooldown
+            collision_point = self.collide(mask)
+            if collision_point:
+                self.bounce()
+                self.last_collision_time = time.time()
+
+
     def reduce_speed(self):
         self.vel = max(self.vel - self.acceleration/2, 0)
         self.move()
 
+
     def bounce(self):
         self.vel = - self.vel/1.5
         self.move()
-
+        print("bouncy")
 def draw(win, images, player_car):
     for img, pos in images:
         win.blit(img, pos)
@@ -127,7 +149,6 @@ player_car = PlayerCar(4, 2)
 
 while running:
 
-    clock.tick(FPS)
 
     draw(WIN, images, player_car)
 
@@ -155,8 +176,7 @@ while running:
     if not moved:
         player_car.reduce_speed()
 
-    if player_car.collide(TRACK_BORDER_MASK) != None:
-        player_car.bounce()
+    player_car.handle_collision(TRACK_BORDER_MASK)
 
     finish_point_of_collision = player_car.collide(FINISH_MASK, *FINISH_POSITION)
     if finish_point_of_collision != None:
@@ -164,7 +184,7 @@ while running:
             player_car.bounce()
         else:
             player_car.reset()
-
+    clock.tick(FPS)
 
 
 pygame.quit()

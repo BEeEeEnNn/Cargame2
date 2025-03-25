@@ -11,6 +11,7 @@ def blit_rotate_center(win, image, top_left, angle):
     rotated_image = pygame.transform.rotate(image, angle)
     new_rect = rotated_image.get_rect(center=image.get_rect(topleft = top_left).center)
     win.blit(rotated_image, new_rect.topleft)
+    return new_rect.topleft
 
 #Alle Bilder importiert
 FINISH = scale_image(pygame.image.load("Sprites/finish.png"),1.08)
@@ -53,16 +54,15 @@ class AbstractCar:
 #ChatGPT
     def get_mask(self):
         rotated_image = pygame.transform.rotate(self.img, self.angle)
+        #new_rect = rotated_image.get_rect(center=self.img.get_rect(topleft=top_left).center)
         return pygame.mask.from_surface(rotated_image)
 
 
     def draw(self, win, ):
-        blit_rotate_center(win, self.img, (self.x, self.y), self.angle)
-
+        tleft = blit_rotate_center(win, self.img, (self.x, self.y), self.angle)
         # DEBUG: Kollisionmaske des Autos zeichnen
-
-        car_mask_surface = player_car.get_mask().to_surface(setcolor=(255, 0, 0, 100), unsetcolor=(0, 0, 0, 0))
-        win.blit(car_mask_surface, (int(player_car.x), int(player_car.y)))
+        car_mask_surface = self.get_mask().to_surface(setcolor=(255, 0, 0, 100), unsetcolor=(0, 0, 0, 0))
+        win.blit(car_mask_surface, tleft)
 
     pygame.display.update()
 
@@ -92,8 +92,7 @@ class AbstractCar:
 
     def collide(self, mask, x=0, y=0):
         car_mask = self.get_mask() #ChatGPT
-        offset = (int(self.x - x), int(self.y - y))
-        point_of_intersection = mask.overlap(car_mask, offset)
+        point_of_intersection = mask.overlap(car_mask, (100,50))
         return point_of_intersection
 
 

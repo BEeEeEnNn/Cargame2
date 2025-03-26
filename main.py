@@ -44,6 +44,7 @@ class AbstractCar:
         self.angle = 0
         self.x, self.y = self.START_POS
         self.acceleration = 0.1
+        self.tleft = (0, 0)
 
     def rotate(self, left=False, right=False):
         if left:
@@ -54,15 +55,16 @@ class AbstractCar:
 #ChatGPT
     def get_mask(self):
         rotated_image = pygame.transform.rotate(self.img, self.angle)
+        #pygame.transform.scale_by(rotated_image, 1.1)
         #new_rect = rotated_image.get_rect(center=self.img.get_rect(topleft=top_left).center)
         return pygame.mask.from_surface(rotated_image)
 
 
     def draw(self, win, ):
-        tleft = blit_rotate_center(win, self.img, (self.x, self.y), self.angle)
+        self.tleft = blit_rotate_center(win, self.img, (self.x, self.y), self.angle)
         # DEBUG: Kollisionmaske des Autos zeichnen
         car_mask_surface = self.get_mask().to_surface(setcolor=(255, 0, 0, 100), unsetcolor=(0, 0, 0, 0))
-        win.blit(car_mask_surface, tleft)
+        win.blit(car_mask_surface, (self.x, self.y))
 
     pygame.display.update()
 
@@ -92,7 +94,9 @@ class AbstractCar:
 
     def collide(self, mask, x=0, y=0):
         car_mask = self.get_mask() #ChatGPT
-        point_of_intersection = mask.overlap(car_mask, (100,50))
+        offset = (int(self.tleft[0] -x), int(self.tleft[1] - y))
+        point_of_intersection = mask.overlap(car_mask, offset)
+        print(point_of_intersection)
         return point_of_intersection
 
 

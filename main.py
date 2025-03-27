@@ -20,6 +20,7 @@ def start_screen():
     button_rect = pygame.Rect(WIDTH // 2 - 100, HEIGHT// 2 - 30, 200, 60)
     x = WIDTH
 
+
     while True:
         WIN.fill((144, 238, 144))
         WIN.blit(Startbildschirm, (0, 0))
@@ -40,6 +41,36 @@ def start_screen():
                     return
 
         pygame.display.flip()
+
+
+def end_screen():
+    font = pygame.font.SysFont(None, 100)
+    button_restart = pygame.Rect(WIDTH // 2 - 150, HEIGHT // 2 - 30, 300, 60)
+    button_exit = pygame.Rect(WIDTH // 2 - 150, HEIGHT // 2 + 50, 300, 60)
+
+    while True:
+        WIN.fill((0, 0, 0))  # Schwarzer Hintergrund
+        draw_text("🏁 Spiel beendet! 🏁", font, (255, 255, 255), WIN, WIDTH // 2, HEIGHT // 4)
+
+        # Buttons zeichnen
+        pygame.draw.rect(WIN, (0, 200, 0), button_restart)
+        pygame.draw.rect(WIN, (200, 0, 0), button_exit)
+        draw_text("Neustart", pygame.font.SysFont(None, 40), (255, 255, 255), WIN, WIDTH // 2, HEIGHT // 2)
+        draw_text("Beenden", pygame.font.SysFont(None, 40), (255, 255, 255), WIN, WIDTH // 2, HEIGHT // 2 + 80)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if button_restart.collidepoint(event.pos):
+                    return  # Spiel wird neugestartet
+                if button_exit.collidepoint(event.pos):
+                    pygame.quit()
+                    sys.exit()
+
+        pygame.display.flip()
+
 
 def draw_text(text, font, color, surface, x, y):
     text_obj = font.render(text, True, color)
@@ -285,6 +316,7 @@ while running:
             finish_timer = 0
     if lap_count == 3:
         print("3 Runden abgeschlossen")
+        end_screen()
         player_car.reset()
         lap_count = 0
 
@@ -306,6 +338,7 @@ while running:
             finish_timer2 = 0
     if lap_count2 == 3:
         print("3 Runden abgeschlossen")
+        end_screen()
         player_car2.reset()
         lap_count2 = 0
 

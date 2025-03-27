@@ -96,15 +96,15 @@ FINISH_MASK = pygame.mask.from_surface(FINISH)
 
 GCAR = scale_image(pygame.image.load("Sprites/green-car.png"), 0.7)
 BORDERS = pygame.image.load("Sprites/Borders-Photoroom.png")
-GRASS = scale_image(pygame.image.load("Sprites/grass.jpg"), 2.5)
+GRASS = scale_image(pygame.image.load("Sprites/Hintergrund.png"), 1)
 PCAR = scale_image(pygame.image.load("Sprites/purple-car.png"), 0.8)
 RCAR = scale_image(pygame.image.load("Sprites/red-car.png"), 0.7)
 WCAR = scale_image(pygame.image.load("Sprites/white-car.png"), 0.8)
 TRACK = pygame.image.load("Sprites/Track-Photoroom.png")
-Startbildschirm = pygame.image.load("Startbildschirm.png")
+Startbildschirm = pygame.image.load("Sprites/Startbildschirm.png")
 Startbildschirm.set_colorkey((0,0,0))
-Startbildschirm_Auto = pygame.image.load("Startbildschirm_Auto-fotor-bg-remover-20250326134022.png")
-Startbildschirm_AutoBlau = pygame.image.load("Startbildschirm_AutoBlau-fotor-bg-remover-2025032614154.png")
+Startbildschirm_Auto = pygame.image.load("Sprites/Startbildschirm_Auto-fotor-bg-remover-20250326134022.png")
+Startbildschirm_AutoBlau = pygame.image.load("Sprites/Startbildschirm_AutoBlau-fotor-bg-remover-2025032614154.png")
 
 TRACK_BORDER_MASK = pygame.mask.from_surface(BORDERS)
 
@@ -308,7 +308,6 @@ while running:
             colliding_with_finish = True
             lap_count += 1
             finish_timer = time.time()
-            print("I_work")
 
     if colliding_with_finish:
         if time.time() - finish_timer > 3:
@@ -320,6 +319,7 @@ while running:
         player_car.reset()
         player_car2.reset()
         lap_count = 0
+        lap_count2 = 0
 
     player_car2.handle_collision(TRACK_BORDER_MASK, delta_time)
 
@@ -342,6 +342,7 @@ while running:
         end_screen()
         player_car.reset()
         player_car2.reset()
+        lap_count = 0
         lap_count2 = 0
 
     clock.tick(FPS)

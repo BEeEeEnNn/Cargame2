@@ -51,16 +51,22 @@ def draw_text(text, font, color, surface, x, y):
 
 def draw_lap_count(win, lap_count):
     font = pygame.font.SysFont(None, 50)  # Schriftart mit Größe 40
-    text = f"Runde: {lap_count}"  # Text der Runde
+    text = f"Runde: {lap_count+1}""/3" # Text der Runde
     # Zeichne den Text an einer gut sichtbaren Position (z.B. oben links)
-    draw_text(text, font, (255, 255, 255), win, WIDTH // 2, 50)  # Weißer Text bei Position (Mitte oben)
+    draw_text(text, font, (255, 0, 0), win, 200 // 2, 50)  # Weißer Text bei Position (Mitte oben)
+
+def draw_lap_count2(win, lap_count2):
+    font = pygame.font.SysFont(None, 50)  # Schriftart mit Größe 40
+    text = f"Runde: {lap_count2+1}""/3"  # Text der Runde
+    # Zeichne den Text an einer gut sichtbaren Position (z.B. oben links)
+    draw_text(text, font, (0, 255, 0), win, 2000 // 2, 50)  # Weißer Text bei Position (Mitte oben)
 
 # Alle Bilder importiert
 FINISH = scale_image(pygame.image.load("Sprites/finish.png"), 1.08)
 FINISH_POSITION = (99, 325)
 FINISH_MASK = pygame.mask.from_surface(FINISH)
 
-GCAR = scale_image(pygame.image.load("Sprites/green-car.png"), 0.8)
+GCAR = scale_image(pygame.image.load("Sprites/green-car.png"), 0.7)
 BORDERS = pygame.image.load("Sprites/Borders-Photoroom.png")
 GRASS = scale_image(pygame.image.load("Sprites/grass.jpg"), 2.5)
 PCAR = scale_image(pygame.image.load("Sprites/purple-car.png"), 0.8)
@@ -78,7 +84,9 @@ WIDTH, HEIGHT = TRACK.get_width(), TRACK.get_height()
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Car go vroom vroom 3")
 finish_timer = 0
+finish_timer2 = 0
 colliding_with_finish = False
+colliding_with_finish_2 = False
 
 
 FPS = 60
@@ -108,8 +116,8 @@ class AbstractCar:
 
     def draw(self, win):
         self.tleft = blit_rotate_center(win, self.img, (self.x, self.y), self.angle)
-        car_mask_surface = self.get_mask().to_surface(setcolor=(255, 0, 0, 100), unsetcolor=(0, 0, 0, 0))
-        win.blit(car_mask_surface, self.tleft)
+        
+
 
     pygame.display.update()
 
@@ -167,25 +175,55 @@ class PlayerCar(AbstractCar):
         self.vel = -self.vel / 1.5
         self.move()
 
-def draw(win, images, player_car):
+class PlayerCar2(AbstractCar):
+    IMG = GCAR
+    START_POS = (120, 270)
+
+    def __init__(self, max_vel, rotation_vel):
+            super().__init__(max_vel, rotation_vel)
+            self.last_collision_time = 0
+
+    def handle_collision(self, mask):
+            if time.time() - self.last_collision_time > 0.1:
+                collision_point = self.collide(mask)
+                if collision_point:
+                    self.bounce()
+                    self.last_collision_time = time.time()
+
+    def reduce_speed(self):
+            self.vel = max(self.vel - self.acceleration / 2, 0)
+            self.move()
+
+    def bounce(self):
+            self.vel = -self.vel / 1.5
+            self.move()
+
+
+
+
+def draw(win, images, player_car, player_car2):
     for img, pos in images:
         win.blit(img, pos)
     player_car.draw(win)
+    player_car2.draw(win)
     draw_lap_count(win, lap_count)
+    draw_lap_count2(win, lap_count2)
     pygame.display.update()
 
 running = True
 clock = pygame.time.Clock()
 images = [(GRASS, (0, 0)), (TRACK, (0, 0)), (FINISH, FINISH_POSITION), (BORDERS, (0, 0))]
 player_car = PlayerCar(4, 2)
+player_car2 = PlayerCar2(4, 2)
 
 start_screen()
 
 lap_count = 0
+lap_count2 = 0
 
 while running:
 
-    draw(WIN, images, player_car)
+    draw(WIN, images, player_car, player_car2)
 
     draw_lap_count(WIN, lap_count)
 
@@ -197,19 +235,33 @@ while running:
     keys = pygame.key.get_pressed()
 
     moved = False
-    if keys[pygame.K_a] or keys[pygame.K_LEFT]:
+    if keys[pygame.K_a]:
         player_car.rotate(left=True)
-    if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
+    if keys[pygame.K_d]:
         player_car.rotate(right=True)
-    if keys[pygame.K_w] or keys[pygame.K_UP]:
+    if keys[pygame.K_w]:
         moved = True
         player_car.move_forward()
-    elif keys[pygame.K_s] or keys[pygame.K_SPACE]:
+    elif keys[pygame.K_s]:
         moved = True
         player_car.move_backward()
-
     if not moved:
         player_car.reduce_speed()
+
+    moved2 = False
+    if keys[pygame.K_LEFT]:
+        player_car2.rotate(left=True)
+    if keys[pygame.K_RIGHT]:
+        player_car2.rotate(right=True)
+    if keys[pygame.K_UP]:
+        moved2 = True
+        player_car2.move_forward()
+    elif keys[pygame.K_DOWN]:
+        moved2 = True
+        player_car2.move_backward()
+
+    if not moved2:
+        player_car2.reduce_speed()
 
     player_car.handle_collision(TRACK_BORDER_MASK)
 
@@ -231,6 +283,27 @@ while running:
         print("3 Runden abgeschlossen")
         player_car.reset()
         lap_count = 0
+
+    player_car2.handle_collision(TRACK_BORDER_MASK)
+
+    finish_point_of_collision = player_car2.collide(FINISH_MASK, *FINISH_POSITION)
+    if finish_point_of_collision != None and colliding_with_finish_2 == False:
+        if finish_point_of_collision[1] == 0:
+            player_car2.reset()
+        else:
+            colliding_with_finish_2 = True
+            lap_count2 += 1
+            finish_timer2 = time.time()
+            print("I_work")
+
+    if colliding_with_finish_2:
+        if time.time() - finish_timer2 > 3:
+            colliding_with_finish_2 = False
+            finish_timer2 = 0
+    if lap_count2 == 3:
+        print("3 Runden abgeschlossen")
+        player_car2.reset()
+        lap_count2 = 0
 
     clock.tick(FPS)
 

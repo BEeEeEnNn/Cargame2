@@ -1,10 +1,7 @@
-import pygame
-import time
-import math
-import sys
-import random
+import pygame, time, math, sys, random
 
 pygame.init()
+
 
 
 def scale_image(img, factor):
@@ -91,6 +88,8 @@ colliding_with_finish_2 = False
 
 FPS = 60
 
+last_time = time.time()
+
 can_collide = True
 class AbstractCar:
 
@@ -104,11 +103,11 @@ class AbstractCar:
         self.acceleration = 0.1
         self.tleft = (0, 0)
 
-    def rotate(self, left=False, right=False):
+    def rotate(self,delta_time : float, left=False, right=False):
         if left:
-            self.angle += self.rotation_vel
+            self.angle += self.rotation_vel * delta_time
         elif right:
-            self.angle -= self.rotation_vel
+            self.angle -= self.rotation_vel * delta_time
 
     def get_mask(self):
         rotated_image = pygame.transform.rotate(self.img, self.angle)
@@ -121,25 +120,25 @@ class AbstractCar:
 
     pygame.display.update()
 
-    def move_forward(self):
+    def move_forward(self, delta_time):
         self.vel = min(self.vel + self.acceleration, self.max_vel)
-        self.move()
+        self.move(delta_time)
 
-    def move_backward(self):
+    def move_backward(self, delta_time):
         self.vel = max(self.vel - self.acceleration, -self.max_vel / 2)
-        self.move()
+        self.move(delta_time)
 
-    def move(self):
+    def move(self, delta_time):
         radians = math.radians(self.angle)
         vertical = math.cos(radians) * self.vel
         horizontal = math.sin(radians) * self.vel
 
-        self.y -= vertical
-        self.x -= horizontal
+        self.y -= vertical * delta_time
+        self.x -= horizontal * delta_time
 
-    def reduce_speed(self):
+    def reduce_speed(self, delta_time):
         self.vel = max(self.vel - self.acceleration / 2, 0)
-        self.move()
+        self.move(delta_time)
 
     def collide(self, mask, x=0, y=0):
         car_mask = self.get_mask()
@@ -160,20 +159,20 @@ class PlayerCar(AbstractCar):
         super().__init__(max_vel, rotation_vel)
         self.last_collision_time = 0
 
-    def handle_collision(self, mask):
+    def handle_collision(self, mask, delta_time):
         if time.time() - self.last_collision_time > 0.1:
             collision_point = self.collide(mask)
             if collision_point:
-                self.bounce()
+                self.bounce(delta_time)
                 self.last_collision_time = time.time()
 
-    def reduce_speed(self):
+    def reduce_speed(self, delta_time):
         self.vel = max(self.vel - self.acceleration / 2, 0)
-        self.move()
+        self.move(delta_time)
 
-    def bounce(self):
+    def bounce(self, delta_time):
         self.vel = -self.vel / 1.5
-        self.move()
+        self.move(delta_time)
 
 class PlayerCar2(AbstractCar):
     IMG = GCAR
@@ -183,20 +182,20 @@ class PlayerCar2(AbstractCar):
             super().__init__(max_vel, rotation_vel)
             self.last_collision_time = 0
 
-    def handle_collision(self, mask):
+    def handle_collision(self, mask, delta_time):
             if time.time() - self.last_collision_time > 0.1:
                 collision_point = self.collide(mask)
                 if collision_point:
-                    self.bounce()
+                    self.bounce(delta_time)
                     self.last_collision_time = time.time()
 
-    def reduce_speed(self):
+    def reduce_speed(self, delta_time):
             self.vel = max(self.vel - self.acceleration / 2, 0)
-            self.move()
+            self.move(delta_time)
 
-    def bounce(self):
+    def bounce(self, delta_time):
             self.vel = -self.vel / 1.5
-            self.move()
+            self.move(delta_time)
 
 
 
@@ -223,6 +222,11 @@ lap_count2 = 0
 
 while running:
 
+    delta_time = time.time() - last_time
+    delta_time *= 60
+    last_time = time.time()
+
+
     draw(WIN, images, player_car, player_car2)
 
     draw_lap_count(WIN, lap_count)
@@ -236,34 +240,34 @@ while running:
 
     moved = False
     if keys[pygame.K_a]:
-        player_car.rotate(left=True)
+        player_car.rotate(delta_time, left=True)
     if keys[pygame.K_d]:
-        player_car.rotate(right=True)
+        player_car.rotate(delta_time, right=True)
     if keys[pygame.K_w]:
         moved = True
-        player_car.move_forward()
+        player_car.move_forward(delta_time)
     elif keys[pygame.K_s]:
         moved = True
-        player_car.move_backward()
+        player_car.move_backward(delta_time)
     if not moved:
-        player_car.reduce_speed()
+        player_car.reduce_speed(delta_time)
 
     moved2 = False
     if keys[pygame.K_LEFT]:
-        player_car2.rotate(left=True)
+        player_car2.rotate(delta_time, left=True)
     if keys[pygame.K_RIGHT]:
-        player_car2.rotate(right=True)
+        player_car2.rotate(delta_time, right=True)
     if keys[pygame.K_UP]:
         moved2 = True
-        player_car2.move_forward()
+        player_car2.move_forward(delta_time)
     elif keys[pygame.K_DOWN]:
         moved2 = True
-        player_car2.move_backward()
+        player_car2.move_backward(delta_time)
 
     if not moved2:
-        player_car2.reduce_speed()
+        player_car2.reduce_speed(delta_time)
 
-    player_car.handle_collision(TRACK_BORDER_MASK)
+    player_car.handle_collision(TRACK_BORDER_MASK, delta_time)
 
     finish_point_of_collision = player_car.collide(FINISH_MASK, *FINISH_POSITION)
     if finish_point_of_collision != None and colliding_with_finish == False:
@@ -284,7 +288,7 @@ while running:
         player_car.reset()
         lap_count = 0
 
-    player_car2.handle_collision(TRACK_BORDER_MASK)
+    player_car2.handle_collision(TRACK_BORDER_MASK, delta_time)
 
     finish_point_of_collision = player_car2.collide(FINISH_MASK, *FINISH_POSITION)
     if finish_point_of_collision != None and colliding_with_finish_2 == False:

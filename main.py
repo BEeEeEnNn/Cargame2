@@ -49,8 +49,8 @@ def end_screen():
     button_exit = pygame.Rect(WIDTH // 2 - 150, HEIGHT // 2 + 50, 300, 60)
 
     while True:
-        WIN.fill((0, 0, 0))  # Schwarzer Hintergrund
-        draw_text("🏁 Spiel beendet! 🏁", font, (255, 255, 255), WIN, WIDTH // 2, HEIGHT // 4)
+        WIN.fill((144, 238, 144))  # Schwarzer Hintergrund
+        draw_text(player, font, (255, 255, 255), WIN, WIDTH// 2, HEIGHT // 4)
 
         # Buttons zeichnen
         pygame.draw.rect(WIN, (0, 200, 0), button_restart)
@@ -315,9 +315,10 @@ while running:
             colliding_with_finish = False
             finish_timer = 0
     if lap_count == 3:
-        print("3 Runden abgeschlossen")
+        player = "Spieler 1 gewinnt"
         end_screen()
         player_car.reset()
+        player_car2.reset()
         lap_count = 0
 
     player_car2.handle_collision(TRACK_BORDER_MASK, delta_time)
@@ -337,8 +338,9 @@ while running:
             colliding_with_finish_2 = False
             finish_timer2 = 0
     if lap_count2 == 3:
-        print("3 Runden abgeschlossen")
+        player = "Spieler 2 gewinnt"
         end_screen()
+        player_car.reset()
         player_car2.reset()
         lap_count2 = 0
 

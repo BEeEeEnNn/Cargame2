@@ -154,7 +154,7 @@ class AbstractCar:
 
 class PlayerCar(AbstractCar):
     IMG = RCAR
-    START_POS = (142, 270)
+    START_POS = (170, 270)
 
     def __init__(self, max_vel, rotation_vel):
         super().__init__(max_vel, rotation_vel)
@@ -177,7 +177,7 @@ class PlayerCar(AbstractCar):
 
 class PlayerCar2(AbstractCar):
     IMG = GCAR
-    START_POS = (120, 270)
+    START_POS = (110, 270)
 
     def __init__(self, max_vel, rotation_vel):
             super().__init__(max_vel, rotation_vel)

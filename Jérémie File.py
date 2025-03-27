@@ -104,10 +104,10 @@ PCAR = scale_image(pygame.image.load("Sprites/purple-car.png"), 0.8)
 RCAR = scale_image(pygame.image.load("Sprites/red-car.png"), 0.7)
 WCAR = scale_image(pygame.image.load("Sprites/white-car.png"), 0.8)
 TRACK = pygame.image.load("Sprites/Track-Photoroom.png")
-Startbildschirm = pygame.image.load("Startbildschirm.png")
+Startbildschirm = pygame.image.load("Sprites/Startbildschirm.png")
 Startbildschirm.set_colorkey((0, 0, 0))
-Startbildschirm_Auto = pygame.image.load("Startbildschirm_Auto-fotor-bg-remover-20250326134022.png")
-Startbildschirm_AutoBlau = pygame.image.load("Startbildschirm_AutoBlau-fotor-bg-remover-2025032614154.png")
+Startbildschirm_Auto = pygame.image.load("Sprites/Startbildschirm_Auto-fotor-bg-remover-20250326134022.png")
+Startbildschirm_AutoBlau = pygame.image.load("Sprites/Startbildschirm_AutoBlau-fotor-bg-remover-2025032614154.png")
 
 TRACK_BORDER_MASK = pygame.mask.from_surface(BORDERS)
 

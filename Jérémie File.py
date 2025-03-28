@@ -1,4 +1,5 @@
 import pygame, time, math, sys, random
+from pygame.math import Vector2
 
 pygame.init()
 
@@ -135,54 +136,83 @@ class AbstractCar:
         self.max_vel = max_vel
         self.vel = 0
         self.rotation_vel = rotation_vel
-        self.angle = 0
         self.x, self.y = self.START_POS
         self.acceleration = 0.1
         self.position = (self.x, self.y)
         self.tleft = (0, 0)
         self.velocity = Vector2(0, 0)  # Initial velocity
         self.acceleration_input = 0  # Throttle input
-        self.acceleration_factor = 20  # Engine power
+        self.acceleration_factor = 45  # Engine power
         self.max_speed = 30  # Maximum speed
         self.drag = 0.1  # Default drag coefficient
         self.angle = 0  # Ship direction
-        self.drift_factor = 0.95  # Drift control
+        self.drift_factor = 0.51  # Drift control
         self.steering_input = 0  # Steering input
-        self.turn_factor = 3.5  # Turning speed
+        self.turn_factor =10  # Turning speed
 
-    def engine_force(self, acceleration_input):
-        velocity_vs_up = self.velocity.dot(Vector2(0, -1).rotate(self.angle))
-        if (velocity_vs_up > self.max_speed and acceleration_input > 0 or
-            velocity_vs_up < -self.max_speed * 0.5 and acceleration_input < 0 or
-            self.velocity.length_squared() > self.max_speed ** 2 and acceleration_input > 0):
-            return
+    def engine_force(self):
+        # Forward direction based on the car's current angle
+        direction = Vector2(0, -1).rotate(self.angle)  # Points forward
+
+        # Apply acceleration in the direction the car is facing
+        if self.acceleration_input != 0:
+            force = direction * self.acceleration_input * self.acceleration_factor
+            self.velocity += force
+        # Apply drag/friction to slow the car down when no acceleration is applied
+        self.velocity *= self.drag
+
+        # Limit speed
+        if self.velocity.length() > self.max_speed:
+            self.velocity.scale_to_length(self.max_speed)
+
+        # Apply drift factor to prevent excessive sideways sliding
         self.kill_orthogonal_velocity()
-        if acceleration_input == 0:
-            self.velocity *= 0.9  # Simulate drag
-        else:
-            self.drag = 0
-        engine_force_vector = Vector2(0, -1).rotate(self.angle) * acceleration_input * self.acceleration_factor
-        self.velocity += engine_force_vector * 0.1  # Apply force (scaled down for stability)
+
     def kill_orthogonal_velocity(self):
+        # Reduce sideways movement to simulate drifting
         forward_velocity = Vector2(0, -1).rotate(self.angle) * self.velocity.dot(Vector2(0, -1).rotate(self.angle))
         right_velocity = Vector2(1, 0).rotate(self.angle) * self.velocity.dot(Vector2(1, 0).rotate(self.angle))
+
         self.velocity = forward_velocity + right_velocity * self.drift_factor
-    def steering(self, steering_input):
-        min_speed = (self.velocity.length() / 8)
-        min_speed = max(0, min(min_speed, 1))  # Clamp value between 0 and 1
-        self.angle -= steering_input * self.turn_factor * min_speed
-    def update(self, steering_input, acceleration_input):
-        self.engine_force(acceleration_input)
-        self.steering(steering_input)
+
+    def steering(self):
+        if self.velocity.length() > 0.2:  # Only turn when moving
+            turn_speed = self.turn_factor * (self.velocity.length() / self.max_speed)
+            self.angle += self.steering_input * turn_speed  # Rotate car
+
+    def update(self):
+        self.engine_force()
+        self.steering()
         self.position += self.velocity  # Apply velocity to position
+
     def get_mask(self):
         rotated_image = pygame.transform.rotate(self.img, self.angle)
         return pygame.mask.from_surface(rotated_image)
 
     def draw(self, win):
-        self.tleft = blit_rotate_center(win, self.img, (self.x, self.y), self.angle)
+        self.tleft = blit_rotate_center(win, self.img, self.position, -self.angle)
 
     pygame.display.update()
+
+    def move_forward(self, delta_time):
+        self.vel = min(self.vel + self.acceleration, self.max_vel)
+        self.move(delta_time)
+
+    def move_backward(self, delta_time):
+        self.vel = max(self.vel - self.acceleration, -self.max_vel / 2)
+        self.move(delta_time)
+
+    def move(self, delta_time):
+        radians = math.radians(self.angle)
+        vertical = math.cos(radians) * self.vel
+        horizontal = math.sin(radians) * self.vel
+
+        self.y -= vertical * delta_time
+        self.x -= horizontal * delta_time
+
+    def reduce_speed(self, delta_time):
+        self.vel = max(self.vel - self.acceleration / 2, 0)
+        self.move(delta_time)
 
     def collide(self, mask, x=0, y=0):
         car_mask = self.get_mask()
@@ -284,16 +314,20 @@ while running:
 
     moved = False
     if keys[pygame.K_a]:
-        steering_input = -1
-    if keys[pygame.K_d]:
-        steering_input = 1
+        player_car.steering_input = -1
+    elif keys[pygame.K_d]:
+        player_car.steering_input = 1
+    else:
+        player_car.steering_input = 0
     if keys[pygame.K_w]:
-        acceleration_input = 1
+        moved = True
+        player_car.acceleration_input = 1
     elif keys[pygame.K_s]:
-        acceleration_input = -1
+        player_car.acceleration_input = -1
+    elif player_car.acceleration_input != 0:
+        player_car.acceleration_input = 0
+    player_car.update()
 
-    player_car.update(steering_input, acceleration_input)
-    
     moved2 = False
     if keys[pygame.K_LEFT]:
         player_car2.rotate(delta_time, left=True)

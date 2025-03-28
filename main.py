@@ -81,13 +81,13 @@ def draw_lap_count(win, lap_count):
     font = pygame.font.SysFont(None, 50)  # Schriftart mit Größe 40
     text = f"Runde: {lap_count+1}""/3" # Text der Runde
     # Zeichne den Text an einer gut sichtbaren Position (z.B. oben links)
-    draw_text(text, font, (255, 0, 0), win, 200 // 2, 50)  # Weißer Text bei Position (Mitte oben)
+    draw_text(text, font, (255, 0, 0), win, 2000 // 2, 50)  # Weißer Text bei Position (Mitte oben)
 
 def draw_lap_count2(win, lap_count2):
     font = pygame.font.SysFont(None, 50)  # Schriftart mit Größe 40
     text = f"Runde: {lap_count2+1}""/3"  # Text der Runde
     # Zeichne den Text an einer gut sichtbaren Position (z.B. oben links)
-    draw_text(text, font, (0, 255, 0), win, 2000 // 2, 50)  # Weißer Text bei Position (Mitte oben)
+    draw_text(text, font, (0, 255, 0), win, 200 // 2, 50)  # Weißer Text bei Position (Mitte oben)
 
 # Alle Bilder importiert
 FINISH = scale_image(pygame.image.load("Sprites/finish.png"), 1.08)
@@ -164,8 +164,11 @@ class AbstractCar:
         vertical = math.cos(radians) * self.vel
         horizontal = math.sin(radians) * self.vel
 
+        
+
         self.y -= vertical * delta_time
         self.x -= horizontal * delta_time
+        
 
     def reduce_speed(self, delta_time):
         self.vel = max(self.vel - self.acceleration / 2, 0)
@@ -262,6 +265,7 @@ while running:
 
     draw_lap_count(WIN, lap_count)
 
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -270,28 +274,28 @@ while running:
     keys = pygame.key.get_pressed()
 
     moved = False
-    if keys[pygame.K_a]:
+    if keys[pygame.K_LEFT]:
         player_car.rotate(delta_time, left=True)
-    if keys[pygame.K_d]:
+    if keys[pygame.K_RIGHT]:
         player_car.rotate(delta_time, right=True)
-    if keys[pygame.K_w]:
+    if keys[pygame.K_UP]:
         moved = True
         player_car.move_forward(delta_time)
-    elif keys[pygame.K_s]:
+    elif keys[pygame.K_DOWN]:
         moved = True
         player_car.move_backward(delta_time)
     if not moved:
         player_car.reduce_speed(delta_time)
 
     moved2 = False
-    if keys[pygame.K_LEFT]:
+    if keys[pygame.K_a]:
         player_car2.rotate(delta_time, left=True)
-    if keys[pygame.K_RIGHT]:
+    if keys[pygame.K_d]:
         player_car2.rotate(delta_time, right=True)
-    if keys[pygame.K_UP]:
+    if keys[pygame.K_w]:
         moved2 = True
         player_car2.move_forward(delta_time)
-    elif keys[pygame.K_DOWN]:
+    elif keys[pygame.K_s]:
         moved2 = True
         player_car2.move_backward(delta_time)
 

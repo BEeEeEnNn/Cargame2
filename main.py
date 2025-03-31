@@ -2,8 +2,10 @@ import pygame, time, math, sys, random
 
 pygame.init()
 
+#Alles mit "delta time": https://www.youtube.com/watch?v=OmkAUzvwsDk
 
 
+#Videoserie:Pygame Car Racing Tutorial
 def scale_image(img, factor):
     size = round(img.get_width() * factor), round(img.get_height() * factor)
     return pygame.transform.scale(img, size)
@@ -14,7 +16,7 @@ def blit_rotate_center(win, image, top_left, angle):
     win.blit(rotated_image, new_rect.topleft)
     return new_rect.topleft
 
-# Startbildschirm-Funktion
+#ChatGPT/selber bearbeitet
 def start_screen():
     font = pygame.font.SysFont(None, 100)
     button_rect = pygame.Rect(WIDTH // 2 - 100, HEIGHT// 2 - 30, 200, 60)
@@ -42,7 +44,7 @@ def start_screen():
 
         pygame.display.flip()
 
-
+#Chatgpt/selber bearbeitet
 def end_screen():
     font = pygame.font.SysFont(None, 100)
     button_restart = pygame.Rect(WIDTH // 2 - 150, HEIGHT // 2 - 30, 300, 60)
@@ -71,18 +73,18 @@ def end_screen():
 
         pygame.display.flip()
 
-
+#ChatGPT
 def draw_text(text, font, color, surface, x, y):
     text_obj = font.render(text, True, color)
     text_rect = text_obj.get_rect(center=(x, y))
     surface.blit(text_obj, text_rect)
-
+#ChatGPT / selber bearbeitet
 def draw_lap_count(win, lap_count):
     font = pygame.font.SysFont(None, 50)  # Schriftart mit Größe 40
     text = f"Runde: {lap_count+1}""/3" # Text der Runde
     # Zeichne den Text an einer gut sichtbaren Position (z.B. oben links)
     draw_text(text, font, (255, 0, 0), win, 2000 // 2, 50)  # Weißer Text bei Position (Mitte oben)
-
+#selber bearbeitet
 def draw_lap_count2(win, lap_count2):
     font = pygame.font.SysFont(None, 50)  # Schriftart mit Größe 40
     text = f"Runde: {lap_count2+1}""/3"  # Text der Runde
@@ -90,6 +92,7 @@ def draw_lap_count2(win, lap_count2):
     draw_text(text, font, (0, 255, 0), win, 200 // 2, 50)  # Weißer Text bei Position (Mitte oben)
 
 # Alle Bilder importiert
+#alles selber
 FINISH = scale_image(pygame.image.load("Sprites/finish.png"), 1.08)
 FINISH_POSITION = (99, 325)
 FINISH_MASK = pygame.mask.from_surface(FINISH)
@@ -107,7 +110,7 @@ Startbildschirm_Auto = pygame.image.load("Sprites/Startbildschirm_Auto-fotor-bg-
 Startbildschirm_AutoBlau = pygame.image.load("Sprites/Startbildschirm_AutoBlau-fotor-bg-remover-2025032614154.png")
 
 TRACK_BORDER_MASK = pygame.mask.from_surface(BORDERS)
-
+#Videoserie: Pygame Car Racing Tutorial
 WIDTH, HEIGHT = TRACK.get_width(), TRACK.get_height()
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Car go vroom vroom 3")
@@ -121,7 +124,7 @@ colliding_with_finish_2 = False
 FPS = 60
 
 last_time = time.time()
-
+# Videoserie: Pygame Car Racing Tutorial
 can_collide = True
 class AbstractCar:
 
@@ -157,7 +160,7 @@ class AbstractCar:
         self.move(delta_time)
 
     def move_backward(self, delta_time):
-        self.vel = max(self.vel - self.acceleration, -self.max_vel / 2)
+        self.vel = max(self.vel - self.acceleration, -self.max_vel / 2)#Selber geändert
         self.move(delta_time)
 
     def move(self, delta_time):
@@ -175,6 +178,7 @@ class AbstractCar:
         self.vel = max(self.vel - self.acceleration / 2, 0)
         self.move(delta_time)
 
+    #Verbesserung durch Ray, ChatGPT und selber
     def collide(self, mask, x=0, y=0):
         car_mask = self.get_mask()
         offset = (int(self.tleft[0] - x), int(self.tleft[1] - y))
@@ -209,11 +213,12 @@ class PlayerCar(AbstractCar):
         self.vel = -self.vel / 1.5
         self.move(delta_time)
 
+    #Von Chatgpt / selber geändert
     def car_bounce(self, delta_time):
             self.vel = -self.vel / 3
             self.move(delta_time)
 
-
+    # selber
 class PlayerCar2(AbstractCar):
     IMG = GCAR
     START_POS = (110, 270)
@@ -242,7 +247,7 @@ class PlayerCar2(AbstractCar):
             self.move(delta_time)
 
 
-
+#Videoserie: Pygame Car Racing Tutorial
 def draw(win, images, player_car, player_car2):
     for img, pos in images:
         win.blit(img, pos)
@@ -296,6 +301,7 @@ while running:
     if not moved:
         player_car.reduce_speed(delta_time)
 
+#Selber
     moved2 = False
     if keys[pygame.K_a]:
         player_car2.rotate(delta_time, left=True)
@@ -318,6 +324,7 @@ while running:
 
     player_car.handle_collision(TRACK_BORDER_MASK, delta_time)
 
+#Selber/ChatGPT/Ray hat geholfen
     finish_point_of_collision = player_car.collide(FINISH_MASK, *FINISH_POSITION)
     if finish_point_of_collision != None and colliding_with_finish == False:
         if finish_point_of_collision[1] == 0:

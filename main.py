@@ -94,11 +94,11 @@ FINISH = scale_image(pygame.image.load("Sprites/finish.png"), 1.08)
 FINISH_POSITION = (99, 325)
 FINISH_MASK = pygame.mask.from_surface(FINISH)
 
-GCAR = scale_image(pygame.image.load("Sprites/green-car.png"), 0.7)
+GCAR = scale_image(pygame.image.load("Sprites/green-car.png"), 0.5)
 BORDERS = pygame.image.load("Sprites/Borders-Photoroom.png")
 GRASS = scale_image(pygame.image.load("Sprites/Hintergrund.png"), 1)
 PCAR = scale_image(pygame.image.load("Sprites/purple-car.png"), 0.8)
-RCAR = scale_image(pygame.image.load("Sprites/red-car.png"), 0.7)
+RCAR = scale_image(pygame.image.load("Sprites/red-car.png"), 0.5)
 WCAR = scale_image(pygame.image.load("Sprites/white-car.png"), 0.8)
 TRACK = pygame.image.load("Sprites/Track-Photoroom.png")
 Startbildschirm = pygame.image.load("Sprites/Startbildschirm.png")
@@ -115,6 +115,7 @@ finish_timer = 0
 finish_timer2 = 0
 colliding_with_finish = False
 colliding_with_finish_2 = False
+
 
 
 FPS = 60
@@ -208,6 +209,11 @@ class PlayerCar(AbstractCar):
         self.vel = -self.vel / 1.5
         self.move(delta_time)
 
+    def car_bounce(self, delta_time):
+            self.vel = -self.vel / 3
+            self.move(delta_time)
+
+
 class PlayerCar2(AbstractCar):
     IMG = GCAR
     START_POS = (110, 270)
@@ -231,6 +237,9 @@ class PlayerCar2(AbstractCar):
             self.vel = -self.vel / 1.5
             self.move(delta_time)
 
+    def car_bounce(self, delta_time):
+            self.vel = -self.vel / 1.5
+            self.move(delta_time)
 
 
 
@@ -302,6 +311,11 @@ while running:
     if not moved2:
         player_car2.reduce_speed(delta_time)
 
+    if player_car.collide(player_car2.get_mask(), player_car2.x, player_car2.y):
+        player_car2.car_bounce(delta_time)
+    if player_car2.collide(player_car.get_mask(), player_car.x, player_car.y):
+        player_car.car_bounce(delta_time)
+
     player_car.handle_collision(TRACK_BORDER_MASK, delta_time)
 
     finish_point_of_collision = player_car.collide(FINISH_MASK, *FINISH_POSITION)
@@ -348,6 +362,7 @@ while running:
         player_car2.reset()
         lap_count = 0
         lap_count2 = 0
+
 
     clock.tick(FPS)
 

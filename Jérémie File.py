@@ -1,4 +1,6 @@
+
 import pygame, time, math, sys, random
+from pygame import Vector2
 
 pygame.init()
 
@@ -150,11 +152,17 @@ class AbstractCar:
         self.steering_input = 0  # Steering input
         self.turn_factor = 3.5  # Turning speed
 
+    def rotate(self, delta_time: float, left=False, right=False):
+        if left:
+            self.angle += self.rotation_vel * delta_time
+        elif right:
+            self.angle -= self.rotation_vel * delta_time
+
     def engine_force(self, acceleration_input):
         velocity_vs_up = self.velocity.dot(Vector2(0, -1).rotate(self.angle))
         if (velocity_vs_up > self.max_speed and acceleration_input > 0 or
-            velocity_vs_up < -self.max_speed * 0.5 and acceleration_input < 0 or
-            self.velocity.length_squared() > self.max_speed ** 2 and acceleration_input > 0):
+                velocity_vs_up < -self.max_speed * 0.5 and acceleration_input < 0 or
+                self.velocity.length_squared() > self.max_speed ** 2 and acceleration_input > 0):
             return
         self.kill_orthogonal_velocity()
         if acceleration_input == 0:
@@ -163,18 +171,22 @@ class AbstractCar:
             self.drag = 0
         engine_force_vector = Vector2(0, -1).rotate(self.angle) * acceleration_input * self.acceleration_factor
         self.velocity += engine_force_vector * 0.1  # Apply force (scaled down for stability)
+
     def kill_orthogonal_velocity(self):
         forward_velocity = Vector2(0, -1).rotate(self.angle) * self.velocity.dot(Vector2(0, -1).rotate(self.angle))
         right_velocity = Vector2(1, 0).rotate(self.angle) * self.velocity.dot(Vector2(1, 0).rotate(self.angle))
         self.velocity = forward_velocity + right_velocity * self.drift_factor
+
     def steering(self, steering_input):
         min_speed = (self.velocity.length() / 8)
         min_speed = max(0, min(min_speed, 1))  # Clamp value between 0 and 1
         self.angle -= steering_input * self.turn_factor * min_speed
+
     def update(self, steering_input, acceleration_input):
         self.engine_force(acceleration_input)
         self.steering(steering_input)
         self.position += self.velocity  # Apply velocity to position
+
     def get_mask(self):
         rotated_image = pygame.transform.rotate(self.img, self.angle)
         return pygame.mask.from_surface(rotated_image)
@@ -183,6 +195,26 @@ class AbstractCar:
         self.tleft = blit_rotate_center(win, self.img, (self.x, self.y), self.angle)
 
     pygame.display.update()
+
+    def move_forward(self, delta_time):
+        self.vel = min(self.vel + self.acceleration, self.max_vel)
+        self.move(delta_time)
+
+    def move_backward(self, delta_time):
+        self.vel = max(self.vel - self.acceleration, -self.max_vel / 2)
+        self.move(delta_time)
+
+    def move(self, delta_time):
+        radians = math.radians(self.angle)
+        vertical = math.cos(radians) * self.vel
+        horizontal = math.sin(radians) * self.vel
+
+        self.y -= vertical * delta_time
+        self.x -= horizontal * delta_time
+
+    def reduce_speed(self, delta_time):
+        self.vel = max(self.vel - self.acceleration / 2, 0)
+        self.move(delta_time)
 
     def collide(self, mask, x=0, y=0):
         car_mask = self.get_mask()
@@ -285,7 +317,7 @@ while running:
     moved = False
     if keys[pygame.K_a]:
         steering_input = -1
-    if keys[pygame.K_d]:
+    elif keys[pygame.K_d]:
         steering_input = 1
     if keys[pygame.K_w]:
         acceleration_input = 1
@@ -293,7 +325,7 @@ while running:
         acceleration_input = -1
 
     player_car.update(steering_input, acceleration_input)
-    
+
     moved2 = False
     if keys[pygame.K_LEFT]:
         player_car2.rotate(delta_time, left=True)

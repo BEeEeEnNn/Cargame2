@@ -4,7 +4,7 @@ pygame.init()
 
 #Alles mit "delta time": https://www.youtube.com/watch?v=OmkAUzvwsDk
 
-
+single_timer = 0
 #Videoserie:Pygame Car Racing Tutorial
 def scale_image(img, factor):
     size = round(img.get_width() * factor), round(img.get_height() * factor)
@@ -22,12 +22,11 @@ def start_screen():
     button_rect = pygame.Rect(WIDTH // 2 - 100, HEIGHT// 2 - 30, 200, 60)
     x = WIDTH
 
-
     while True:
         WIN.fill((144, 238, 144))
         WIN.blit(Startbildschirm, (0, 0))
-        WIN.blit(Startbildschirm_Auto, (-x , 220))
-        WIN.blit(Startbildschirm_AutoBlau, (-x *1.1, 350))
+        WIN.blit(Startbildschirm_Auto, (-x, 220))
+        WIN.blit(Startbildschirm_AutoBlau, (-x * 1.1, 350))
         x += -5
         draw_text("Car Go Vroom Vroom 3", font, (0, 0, 0), WIN, WIDTH // 2, HEIGHT // 4)
 
@@ -43,6 +42,44 @@ def start_screen():
                     return
 
         pygame.display.flip()
+
+def single_player_screen():
+    font = pygame.font.SysFont(None, 100)
+    button_rect = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 - 30, 200, 60)
+
+    while True:
+        WIN.fill((144, 238, 144))  # Schwarzer Hintergrund
+
+#selber
+def options_screen():
+    font = pygame.font.SysFont(None, 100)
+    button_rect = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 - 30, 200, 60)
+
+
+    while True:
+        WIN.fill((144, 238, 144))
+        WIN.blit(Startbildschirm, (0, 0))
+        button_single = pygame.Rect(WIDTH // 2 - 150, HEIGHT // 2 - 30, 300, 60)
+        button_multi = pygame.Rect(WIDTH // 2 - 150, HEIGHT // 2 + 50, 300, 60)
+
+        draw_text("Car Go Vroom Vroom 3", font, (0, 0, 0), WIN, WIDTH // 2, HEIGHT // 4)
+
+        pygame.draw.rect(WIN, (0, 200, 0), button_single)
+        pygame.draw.rect(WIN, (0, 200, 0), button_multi)
+        draw_text("1 Spieler", pygame.font.SysFont(None, 40), (255, 255, 255), WIN, WIDTH // 2, HEIGHT // 2)
+        draw_text("2 Spieler", pygame.font.SysFont(None, 40), (255, 255, 255), WIN, WIDTH // 2, HEIGHT // 2 + 80)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if button_single.collidepoint(event.pos):
+                    return False
+                elif button_multi.collidepoint(event.pos):
+                   return True
+        pygame.display.flip()
+
 
 #Chatgpt/selber bearbeitet
 def end_screen():
@@ -90,6 +127,41 @@ def draw_lap_count2(win, lap_count2):
     text = f"Runde: {lap_count2+1}""/3"  # Text der Runde
     # Zeichne den Text an einer gut sichtbaren Position (z.B. oben links)
     draw_text(text, font, (0, 255, 0), win, 200 // 2, 50)  # Weißer Text bei Position (Mitte oben)
+#ChatGPT
+def draw_timer(win, single_timer):
+    font = pygame.font.SysFont(None, 50)  # Schriftart mit Größe 40
+    text = f"Zeit:{single_timer}"
+    # Zeichne den Text an einer gut sichtbaren Position (z.B. oben links)
+    draw_text(text, font, (255, 0, 0), win, 1130 // 2, 50)  # Weißer Text bei Position (Mitte oben)
+#selber
+def timer_reset():
+    global single_timer
+    single_timer = 0
+
+#ChatGPT/Selber/Ray
+def start_countdown(win, images, player_car, player_car2, multiplayer, lap_count, lap_count2):
+    font = pygame.font.SysFont(None, 100)
+
+    for i in range(3, 1, -1):  # Countdown von 3 bis 1
+        draw(win, images, player_car, player_car2, multiplayer, 0, lap_count, lap_count2)  # Strecke & Autos zeichnen
+        draw_text(str(i), font, (255, 255, 255), win, WIDTH // 2, HEIGHT // 2)  # Countdown-Zahl
+        pygame.display.update()
+        pygame.time.delay(1000)  # 1 Sekunde warten
+    for i in range(1, 0, -1):  # Countdown von 3 bis 1
+        draw(win, images, player_car, player_car2, multiplayer, 0, lap_count, lap_count2)  # Strecke & Autos zeichnen
+        draw_text(str(i), font, (255, 255, 255), win, WIDTH // 2, HEIGHT // 2)  # Countdown-Zahl
+        pygame.display.update()
+        pygame.time.delay(random.randint(500, 2500))  # 1 Sekunde warten
+
+
+    # "GO!" anzeigen
+    draw(win, images, player_car, player_car2, multiplayer, 0, lap_count, lap_count2)  # Strecke & Autos zeichnen
+    draw_text("GO!", font, (0, 255, 0), win, WIDTH // 2, HEIGHT // 2)
+    pygame.display.update()
+    pygame.time.delay(1000)
+
+
+
 
 # Alle Bilder importiert
 #alles selber
@@ -194,6 +266,7 @@ class PlayerCar(AbstractCar):
     IMG = RCAR
     START_POS = (170, 270)
 
+
     def __init__(self, max_vel, rotation_vel):
         super().__init__(max_vel, rotation_vel)
         self.last_collision_time = 0
@@ -221,7 +294,7 @@ class PlayerCar(AbstractCar):
     # selber
 class PlayerCar2(AbstractCar):
     IMG = GCAR
-    START_POS = (110, 270)
+    START_POS = (110, 230)
 
     def __init__(self, max_vel, rotation_vel):
             super().__init__(max_vel, rotation_vel)
@@ -248,14 +321,20 @@ class PlayerCar2(AbstractCar):
 
 
 #Videoserie: Pygame Car Racing Tutorial
-def draw(win, images, player_car, player_car2):
+def draw(win, images, player_car, player_car2, multiplayer, single_timer, lap_count, lap_count2):
     for img, pos in images:
         win.blit(img, pos)
     player_car.draw(win)
-    player_car2.draw(win)
-    draw_lap_count(win, lap_count)
-    draw_lap_count2(win, lap_count2)
+
+    if not multiplayer:
+        draw_timer(win, single_timer)
+    if multiplayer:
+        player_car2.draw(win)
+        draw_lap_count(win, lap_count)
+        draw_lap_count2(win, lap_count2)
+
     pygame.display.update()
+
 
 running = True
 clock = pygame.time.Clock()
@@ -263,20 +342,24 @@ images = [(GRASS, (0, 0)), (TRACK, (0, 0)), (FINISH, FINISH_POSITION), (BORDERS,
 player_car = PlayerCar(4, 2)
 player_car2 = PlayerCar2(4, 2)
 
-start_screen()
-
 lap_count = 0
 lap_count2 = 0
+
+start_screen()
+multiplayer = options_screen()
+start_countdown(WIN, images, player_car, player_car2, multiplayer, lap_count, lap_count2)  # Starte den Countdown
+single_timer = 0  # Timer nach dem Countdown starten
+last_time = time.time()  # Zeitpunkt des Rennstarts speichern
 
 while running:
 
     delta_time = time.time() - last_time
     delta_time *= 60
     last_time = time.time()
+    if not multiplayer:
+        single_timer += 1/60 * delta_time
 
-
-    draw(WIN, images, player_car, player_car2)
-
+    draw(WIN, images, player_car, player_car2, multiplayer, round(single_timer, 2), lap_count, lap_count2)
     draw_lap_count(WIN, lap_count)
 
 
@@ -286,7 +369,6 @@ while running:
             break
 
     keys = pygame.key.get_pressed()
-
     moved = False
     if keys[pygame.K_LEFT]:
         player_car.rotate(delta_time, left=True)
@@ -298,29 +380,32 @@ while running:
     elif keys[pygame.K_DOWN]:
         moved = True
         player_car.move_backward(delta_time)
+    if keys[pygame.K_ESCAPE]:
+        running = False
     if not moved:
         player_car.reduce_speed(delta_time)
 
 #Selber
-    moved2 = False
-    if keys[pygame.K_a]:
-        player_car2.rotate(delta_time, left=True)
-    if keys[pygame.K_d]:
-        player_car2.rotate(delta_time, right=True)
-    if keys[pygame.K_w]:
-        moved2 = True
-        player_car2.move_forward(delta_time)
-    elif keys[pygame.K_s]:
-        moved2 = True
-        player_car2.move_backward(delta_time)
+    if multiplayer:
+        moved2 = False
+        if keys[pygame.K_a]:
+            player_car2.rotate(delta_time, left=True)
+        if keys[pygame.K_d]:
+            player_car2.rotate(delta_time, right=True)
+        if keys[pygame.K_w]:
+            moved2 = True
+            player_car2.move_forward(delta_time)
+        elif keys[pygame.K_s]:
+            moved2 = True
+            player_car2.move_backward(delta_time)
 
-    if not moved2:
-        player_car2.reduce_speed(delta_time)
+        if not moved2:
+            player_car2.reduce_speed(delta_time)
+        if player_car2.collide(player_car.get_mask(), player_car.x, player_car.y):
+            player_car.car_bounce(delta_time)
 
     if player_car.collide(player_car2.get_mask(), player_car2.x, player_car2.y):
         player_car2.car_bounce(delta_time)
-    if player_car2.collide(player_car.get_mask(), player_car.x, player_car.y):
-        player_car.car_bounce(delta_time)
 
     player_car.handle_collision(TRACK_BORDER_MASK, delta_time)
 
@@ -328,47 +413,53 @@ while running:
     finish_point_of_collision = player_car.collide(FINISH_MASK, *FINISH_POSITION)
     if finish_point_of_collision != None and colliding_with_finish == False:
         if finish_point_of_collision[1] == 0:
-            player_car.reset()
+            if multiplayer:
+                player_car.reset()
+
+
         else:
             colliding_with_finish = True
             lap_count += 1
             finish_timer = time.time()
+            timer_reset()
 
     if colliding_with_finish:
         if time.time() - finish_timer > 3:
             colliding_with_finish = False
             finish_timer = 0
-    if lap_count == 3:
-        player = "Spieler 1 gewinnt"
-        end_screen()
-        player_car.reset()
-        player_car2.reset()
-        lap_count = 0
-        lap_count2 = 0
-
-    player_car2.handle_collision(TRACK_BORDER_MASK, delta_time)
-
-    finish_point_of_collision = player_car2.collide(FINISH_MASK, *FINISH_POSITION)
-    if finish_point_of_collision != None and colliding_with_finish_2 == False:
-        if finish_point_of_collision[1] == 0:
+    if multiplayer:
+        if lap_count == 3:
+            player = "Spieler 1 gewinnt"
+            end_screen()
+            player_car.reset()
             player_car2.reset()
-        else:
-            colliding_with_finish_2 = True
-            lap_count2 += 1
-            finish_timer2 = time.time()
-            print("I_work")
+            lap_count = 0
+            lap_count2 = 0
 
-    if colliding_with_finish_2:
-        if time.time() - finish_timer2 > 3:
-            colliding_with_finish_2 = False
-            finish_timer2 = 0
-    if lap_count2 == 3:
-        player = "Spieler 2 gewinnt"
-        end_screen()
-        player_car.reset()
-        player_car2.reset()
-        lap_count = 0
-        lap_count2 = 0
+    if multiplayer:
+        player_car2.handle_collision(TRACK_BORDER_MASK, delta_time)
+
+        finish_point_of_collision = player_car2.collide(FINISH_MASK, *FINISH_POSITION)
+        if finish_point_of_collision != None and colliding_with_finish_2 == False:
+            if finish_point_of_collision[1] == 0:
+                player_car2.reset()
+            else:
+                colliding_with_finish_2 = True
+                lap_count2 += 1
+                finish_timer2 = time.time()
+
+
+        if colliding_with_finish_2:
+            if time.time() - finish_timer2 > 3:
+                colliding_with_finish_2 = False
+                finish_timer2 = 0
+        if lap_count2 == 3:
+            player = "Spieler 2 gewinnt"
+            end_screen()
+            player_car.reset()
+            player_car2.reset()
+            lap_count = 0
+            lap_count2 = 0
 
 
     clock.tick(FPS)

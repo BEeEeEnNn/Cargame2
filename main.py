@@ -413,8 +413,8 @@ while running:
     finish_point_of_collision = player_car.collide(FINISH_MASK, *FINISH_POSITION)
     if finish_point_of_collision != None and colliding_with_finish == False:
         if finish_point_of_collision[1] == 0:
-            if multiplayer:
-                player_car.reset()
+            player_car.reset()
+
 
 
         else:

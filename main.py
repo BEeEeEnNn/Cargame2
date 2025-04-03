@@ -1,3 +1,5 @@
+import os
+
 import pygame, time, math, sys, random
 
 pygame.init()
@@ -180,6 +182,10 @@ Startbildschirm = pygame.image.load("Sprites/Startbildschirm.png")
 Startbildschirm.set_colorkey((0,0,0))
 Startbildschirm_Auto = pygame.image.load("Sprites/Startbildschirm_Auto-fotor-bg-remover-20250326134022.png")
 Startbildschirm_AutoBlau = pygame.image.load("Sprites/Startbildschirm_AutoBlau-fotor-bg-remover-2025032614154.png")
+
+for i in os.scandir("Audio"):
+    print(i)
+bust = pygame.mixer.Sound("Audio/Bust.mp3")
 
 TRACK_BORDER_MASK = pygame.mask.from_surface(BORDERS)
 #Videoserie: Pygame Car Racing Tutorial
@@ -370,6 +376,9 @@ while running:
 
     keys = pygame.key.get_pressed()
     moved = False
+    if keys[pygame.K_6] and keys[pygame.K_9] and keys[pygame.K_y]:
+        bust.play()
+
     if keys[pygame.K_LEFT]:
         player_car.rotate(delta_time, left=True)
     if keys[pygame.K_RIGHT]:

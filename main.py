@@ -183,9 +183,13 @@ Startbildschirm.set_colorkey((0,0,0))
 Startbildschirm_Auto = pygame.image.load("Sprites/Startbildschirm_Auto-fotor-bg-remover-20250326134022.png")
 Startbildschirm_AutoBlau = pygame.image.load("Sprites/Startbildschirm_AutoBlau-fotor-bg-remover-2025032614154.png")
 
-for i in os.scandir("Audio"):
-    print(i)
+
 bust = pygame.mixer.Sound("Audio/Bust.mp3")
+bounce_s = pygame.mixer.Sound("Audio/Bounce.m4a")
+carcollision_s = pygame.mixer.Sound("Audio/Collision.m4a")
+
+
+
 
 TRACK_BORDER_MASK = pygame.mask.from_surface(BORDERS)
 #Videoserie: Pygame Car Racing Tutorial
@@ -409,9 +413,11 @@ while running:
             player_car2.reduce_speed(delta_time)
         if player_car2.collide(player_car.get_mask(), player_car.x, player_car.y):
             player_car.car_bounce(delta_time)
+            carcollision_s.play()
 
     if player_car.collide(player_car2.get_mask(), player_car2.x, player_car2.y):
         player_car2.car_bounce(delta_time)
+        carcollision_s.play()
 
     player_car.handle_collision(TRACK_BORDER_MASK, delta_time)
 

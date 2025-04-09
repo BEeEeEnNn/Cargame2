@@ -1,3 +1,5 @@
+import os
+
 import pygame, time, math, sys, random
 
 pygame.init()
@@ -168,11 +170,11 @@ def start_countdown(win, images, player_car, player_car2, multiplayer, lap_count
         pygame.display.update()
         pygame.time.delay(random.randint(500, 2500))  # 1 Sekunde warten
 
-    # "GO!" anzeigen
-    draw(win, images, player_car, player_car2, multiplayer, 0, lap_count, lap_count2)  # Strecke & Autos zeichnen
-    draw_text("GO!", font, (0, 255, 0), win, WIDTH // 2, HEIGHT // 2)
-    pygame.display.update()
-    pygame.time.delay(1000)
+def GO(win, timer, WIDTH, HEIGHT):
+    font = pygame.font.SysFont(None, 100)
+    draw_text("GO", font, (0, 255, 0), win, 1130 // 2, 50)
+
+
 
 
 # Alle Bilder importiert
@@ -192,6 +194,10 @@ Startbildschirm = pygame.image.load("Sprites/Startbildschirm.png")
 Startbildschirm.set_colorkey((0, 0, 0))
 Startbildschirm_Auto = pygame.image.load("Sprites/Startbildschirm_Auto-fotor-bg-remover-20250326134022.png")
 Startbildschirm_AutoBlau = pygame.image.load("Sprites/Startbildschirm_AutoBlau-fotor-bg-remover-2025032614154.png")
+
+for i in os.scandir("Audio"):
+    print(i)
+bust = pygame.mixer.Sound("Audio/Bust.mp3")
 
 TRACK_BORDER_MASK = pygame.mask.from_surface(BORDERS)
 # Videoserie: Pygame Car Racing Tutorial
@@ -337,6 +343,8 @@ def draw(win, images, player_car, player_car2, multiplayer, single_timer, lap_co
 
     if not multiplayer:
         draw_timer(win, single_timer)
+        if single_timer < 2:
+            GO(win, single_timer, , 0)
     if multiplayer:
         player_car2.draw(win)
         draw_lap_count(win, lap_count)
@@ -353,7 +361,6 @@ player_car2 = PlayerCar2(4, 2)
 
 lap_count = 0
 lap_count2 = 0
-
 start_screen()
 multiplayer = options_screen()
 start_countdown(WIN, images, player_car, player_car2, multiplayer, lap_count, lap_count2)  # Starte den Countdown
@@ -367,8 +374,9 @@ while running:
     last_time = time.time()
     if not multiplayer:
         single_timer += 1 / 60 * delta_time
+    GO(WIN, single_timer, WIDTH, HEIGHT)
 
-    draw(WIN, images, player_car, player_car2, multiplayer, round(single_timer, 2), lap_count, lap_count2)
+    draw(WIN, images, player_car, player_car2, multiplayer, round(single_timer, 1), lap_count, lap_count2)
     draw_lap_count(WIN, lap_count)
 
     for event in pygame.event.get():
@@ -378,6 +386,9 @@ while running:
 
     keys = pygame.key.get_pressed()
     moved = False
+    if keys[pygame.K_6] and keys[pygame.K_9] and keys[pygame.K_y]:
+        bust.play()
+
     if keys[pygame.K_LEFT]:
         player_car.rotate(delta_time, left=True)
     if keys[pygame.K_RIGHT]:
@@ -390,10 +401,6 @@ while running:
         player_car.move_backward(delta_time)
     if keys[pygame.K_ESCAPE]:
         running = False
-    if keys[pygame.K_RETURN]:
-        player_car.reset()
-        timer_reset()
-        start_countdown()
     if not moved:
         player_car.reduce_speed(delta_time)
 
@@ -471,7 +478,6 @@ while running:
             player_car2.reset()
             lap_count = 0
             lap_count2 = 0
-
     clock.tick(FPS)
 
 pygame.quit()

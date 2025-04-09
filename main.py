@@ -228,10 +228,7 @@ class AbstractCar:
 
     def draw(self, win):
         self.tleft = blit_rotate_center(win, self.img, (self.x, self.y), self.angle)
-        
-
-
-    pygame.display.update()
+        pygame.display.update()
 
     def move_forward(self, delta_time):
         self.vel = min(self.vel + self.acceleration, self.max_vel)
@@ -365,7 +362,7 @@ while running:
     if not multiplayer:
         single_timer += 1/60 * delta_time
 
-    draw(WIN, images, player_car, player_car2, multiplayer, round(single_timer, 2), lap_count, lap_count2)
+    draw(WIN, images, player_car, player_car2, multiplayer, round(single_timer, 1), lap_count, lap_count2)
     draw_lap_count(WIN, lap_count)
 
 

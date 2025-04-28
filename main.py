@@ -88,7 +88,7 @@ def end_screen():
     font = pygame.font.SysFont(None, 100)
     button_restart = pygame.Rect(WIDTH // 2 - 150, HEIGHT // 2 - 30, 300, 60)
     button_exit = pygame.Rect(WIDTH // 2 - 150, HEIGHT // 2 + 50, 300, 60)
-
+    button_options_screen = pygame.Rect(WIDTH // 2 - 150, HEIGHT // 2 + 130, 300, 60)
     while True:
         WIN.fill((144, 238, 144))  # Schwarzer Hintergrund
         draw_text(player, font, (255, 255, 255), WIN, WIDTH// 2, HEIGHT // 4)
@@ -96,8 +96,10 @@ def end_screen():
         # Buttons zeichnen
         pygame.draw.rect(WIN, (0, 200, 0), button_restart)
         pygame.draw.rect(WIN, (200, 0, 0), button_exit)
+        pygame.draw.rect(WIN, (0, 0, 200), button_options_screen)
         draw_text("Neustart", pygame.font.SysFont(None, 40), (255, 255, 255), WIN, WIDTH // 2, HEIGHT // 2)
         draw_text("Beenden", pygame.font.SysFont(None, 40), (255, 255, 255), WIN, WIDTH // 2, HEIGHT // 2 + 80)
+        draw_text("Hauptmenü", pygame.font.SysFont(None, 40), (255, 255, 255), WIN, WIDTH // 2, HEIGHT // 2 + 160)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -109,7 +111,9 @@ def end_screen():
                 if button_exit.collidepoint(event.pos):
                     pygame.quit()
                     sys.exit()
-
+                if button_options_screen.collidepoint(event.pos):
+                    options_screen() #Zurück zu Hauptmenü
+                    return
         pygame.display.flip()
 
 #ChatGPT

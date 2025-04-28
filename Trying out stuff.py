@@ -1,3 +1,4 @@
+
 import os
 
 import pygame, time, math, sys, random
@@ -170,11 +171,11 @@ def start_countdown(win, images, player_car, player_car2, multiplayer, lap_count
         pygame.display.update()
         pygame.time.delay(random.randint(500, 2500))  # 1 Sekunde warten
 
-def GO(win, timer, WIDTH, HEIGHT):
-    font = pygame.font.SysFont(None, 100)
-    draw_text("GO", font, (0, 255, 0), win, 1130 // 2, 50)
-
-
+    # "GO!" anzeigen
+    draw(win, images, player_car, player_car2, multiplayer, 0, lap_count, lap_count2)  # Strecke & Autos zeichnen
+    draw_text("GO!", font, (0, 255, 0), win, WIDTH // 2, HEIGHT // 2)
+    pygame.display.update()
+    pygame.time.delay(1000)
 
 
 # Alle Bilder importiert
@@ -197,7 +198,10 @@ Startbildschirm_AutoBlau = pygame.image.load("Sprites/Startbildschirm_AutoBlau-f
 
 for i in os.scandir("Audio"):
     print(i)
+
 bust = pygame.mixer.Sound("Audio/Bust.mp3")
+#bounce_s = pygame.mixer.Sound("Audio/Bounce.m4a")
+#carcollision_s = pygame.mixer.Sound("Audio/Collision.m4a")
 
 TRACK_BORDER_MASK = pygame.mask.from_surface(BORDERS)
 # Videoserie: Pygame Car Racing Tutorial
@@ -343,8 +347,6 @@ def draw(win, images, player_car, player_car2, multiplayer, single_timer, lap_co
 
     if not multiplayer:
         draw_timer(win, single_timer)
-        if single_timer < 2:
-            GO(win, single_timer, , 0)
     if multiplayer:
         player_car2.draw(win)
         draw_lap_count(win, lap_count)
@@ -361,6 +363,7 @@ player_car2 = PlayerCar2(4, 2)
 
 lap_count = 0
 lap_count2 = 0
+
 start_screen()
 multiplayer = options_screen()
 start_countdown(WIN, images, player_car, player_car2, multiplayer, lap_count, lap_count2)  # Starte den Countdown
@@ -374,9 +377,8 @@ while running:
     last_time = time.time()
     if not multiplayer:
         single_timer += 1 / 60 * delta_time
-    GO(WIN, single_timer, WIDTH, HEIGHT)
 
-    draw(WIN, images, player_car, player_car2, multiplayer, round(single_timer, 1), lap_count, lap_count2)
+    draw(WIN, images, player_car, player_car2, multiplayer, round(single_timer, 2), lap_count, lap_count2)
     draw_lap_count(WIN, lap_count)
 
     for event in pygame.event.get():
@@ -422,9 +424,11 @@ while running:
             player_car2.reduce_speed(delta_time)
         if player_car2.collide(player_car.get_mask(), player_car.x, player_car.y):
             player_car.car_bounce(delta_time)
+            #carcollision_s.play()
 
     if player_car.collide(player_car2.get_mask(), player_car2.x, player_car2.y):
         player_car2.car_bounce(delta_time)
+        #carcollision_s.play()
 
     player_car.handle_collision(TRACK_BORDER_MASK, delta_time)
 
@@ -478,6 +482,7 @@ while running:
             player_car2.reset()
             lap_count = 0
             lap_count2 = 0
+
     clock.tick(FPS)
 
 pygame.quit()

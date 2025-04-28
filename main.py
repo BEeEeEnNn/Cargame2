@@ -196,6 +196,21 @@ breaking_s = pygame.mixer.Sound("Audio/Breaking.mp3")
 acceleration_s2 = pygame.mixer.Sound("Audio/Acceleration.mp3")
 breaking_s2 = pygame.mixer.Sound("Audio/Breaking.mp3")
 
+pygame.mixer.music.load("Audio/forward-312979.mp3")
+pygame.mixer.music.set_volume(0.5)
+car1chanacc = pygame.mixer.Channel(0)
+car1chanacc.set_volume(0.1, 0.1)
+car1chandec = pygame.mixer.Channel(3)
+car1chandec.set_volume(0.1, 0.1)
+car2chanacc = pygame.mixer.Channel(1)
+car2chanacc.set_volume(0.1, 0.1)
+car2chandec = pygame.mixer.Channel(4)
+car2chandec.set_volume(0.1, 0.1)
+car1col = pygame.mixer.Channel(5)
+car2col = pygame.mixer.Channel(6)
+effectchan = pygame.mixer.Channel(2)
+
+
 
 TRACK_BORDER_MASK = pygame.mask.from_surface(BORDERS)
 #Videoserie: Pygame Car Racing Tutorial
@@ -374,6 +389,8 @@ single_timer = 0  # Timer nach dem Countdown starten
 last_time = time.time()  # Zeitpunkt des Rennstarts speichern
 
 while running:
+    if not pygame.mixer.music.get_busy():
+        pygame.mixer.music.play()
 
     delta_time = time.time() - last_time
     delta_time *= 60
@@ -393,8 +410,8 @@ while running:
     keys = pygame.key.get_pressed()
     moved = False
     if keys[pygame.K_6] and keys[pygame.K_9] and keys[pygame.K_y]:
-        if not pygame.mixer.get_busy():
-            bust.play()
+        if not effectchan.get_busy():
+            effectchan.play(bust)
 
 
     if keys[pygame.K_LEFT]:
@@ -404,18 +421,14 @@ while running:
     if keys[pygame.K_UP]:
         moved = True
         player_car.move_forward(delta_time)
-        if not pygame.mixer.get_busy():
-            acceleration_s.play(1)
-    else:
-        acceleration_s.stop()
+        if not car1chanacc.get_busy():
+            car1chanacc.play(acceleration_s)
 
     if keys[pygame.K_DOWN]:
         moved = True
         player_car.move_backward(delta_time)
-        if not pygame.mixer.get_busy():
-            breaking_s.play()
-    else:
-        breaking_s.stop()
+        if not car1chandec.get_busy():
+            car1chandec.play(breaking_s)
     if keys[pygame.K_ESCAPE]:
         running = False
     if not moved:
@@ -431,31 +444,27 @@ while running:
         if keys[pygame.K_w]:
             moved2 = True
             player_car2.move_forward(delta_time)
-            if not pygame.mixer.get_busy():
-                acceleration_s2.play(1)
-        else:
-            acceleration_s2.stop()
+            if not car2chanacc.get_busy():
+                car2chanacc.play(acceleration_s2)
 
         if keys[pygame.K_s]:
             moved2 = True
             player_car2.move_backward(delta_time)
-            if not pygame.mixer.get_busy():
-                breaking_s2.play()
-        else:
-            breaking_s2.stop()
+            if not car2chandec.get_busy():
+                car2chandec.play(breaking_s2)
         if not moved2:
             player_car2.reduce_speed(delta_time)
 
         if player_car2.collide(player_car.get_mask(), player_car.x, player_car.y):
             player_car.car_bounce(delta_time)
-            if pygame.mixer.get_busy():
-                carcollision_s.play()
+            if car2col.get_busy():
+               car2col.play(carcollision_s)
 
 
     if player_car.collide(player_car2.get_mask(), player_car2.x, player_car2.y):
         player_car2.car_bounce(delta_time)
-        if pygame.mixer.get_busy():
-            carcollision_s.play()
+        if car1col.get_busy():
+            car1col.play(carcollision_s)
 
     player_car.handle_collision(TRACK_BORDER_MASK, delta_time, bounce_s)
 

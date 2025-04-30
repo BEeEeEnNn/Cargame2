@@ -87,7 +87,6 @@ def options_screen():
                 if button_single.collidepoint(event.pos):
                     return False
                 elif button_multi.collidepoint(event.pos):
-
                     return True
 
         pygame.display.flip()
@@ -386,7 +385,7 @@ def draw(win, images, player_car, player_car2, multiplayer, single_timer, lap_co
         draw_lap_count(win, lap_count)
         draw_lap_count2(win, lap_count2)
 
-    #pygame.display.update()
+
 
 
 running = True
@@ -428,41 +427,41 @@ while running:
     moved = False
     if keys[pygame.K_6] and keys[pygame.K_9] and keys[pygame.K_y]:
         if not effectchan.get_busy():
-            effectchan.play(bust)
+            effectchan.play(bust) #Geheime Botschaft spielen
 
 
     if keys[pygame.K_LEFT]:
-        player_car.rotate(delta_time, left=True)
+        player_car.rotate(delta_time, left=True) #Linksdrehung
     if keys[pygame.K_RIGHT]:
-        player_car.rotate(delta_time, right=True)
+        player_car.rotate(delta_time, right=True) #Rechtsdrehung
     if keys[pygame.K_UP]:
         moved = True
-        player_car.move_forward(delta_time)
+        player_car.move_forward(delta_time) #Beschleunigung
         if not car1chanacc.get_busy():
-            car1chanacc.play(acceleration_s)
+            car1chanacc.play(acceleration_s) #Beschleunigung Sound spielen
     if keys[pygame.K_DOWN]:
         moved = True
-        player_car.move_backward(delta_time)
+        player_car.move_backward(delta_time) #Bremsen
         if not car1chandec.get_busy():
-            car1chandec.play(breaking_s)
+            car1chandec.play(breaking_s) #Bremsen Sound spielen
     if keys[pygame.K_ESCAPE]:
-        running = False
-    if keys[pygame.K_RETURN]:
+        running = False #Beenden wenn Escape gedrückt wird
+    if keys[pygame.K_RETURN]: #Erneut spielen Funktion mithilfe der Enter-Taste
         if multiplayer:
-            player_car2.reset()
-        player_car.reset()
-        pygame.mixer.stop()
-        timer_reset()
-        single_timer = 0
-        finish_timer = 0
-        finish_timer2 = 0
-        start_countdown(WIN, images, player_car, player_car2, multiplayer, lap_count, lap_count2, go_s, countdown_s)
+            player_car2.reset() #Autos zurück zur Startposition
+            player_car.reset()
+            pygame.mixer.stop() #Musik stoppen
+            timer_reset() #Timer neustarten
+            single_timer = 0
+            finish_timer = 0
+            finish_timer2 = 0
+            start_countdown(WIN, images, player_car, player_car2, multiplayer, lap_count, lap_count2, go_s, countdown_s)
     if keys[pygame.K_BACKSPACE]:
         player_car.reset()
         if multiplayer:
             player_car2.reset()
-        pygame.mixer.stop()
-        pygame.mixer.music.stop()
+            pygame.mixer.stop()
+            pygame.mixer.music.stop()
 
 
         multiplayer = options_screen()

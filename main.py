@@ -153,7 +153,10 @@ def timer_reset():
     single_timer = 0
 
 #ChatGPT/Selber/Ray
-def start_countdown(win, images, player_car, player_car2, multiplayer, lap_count, lap_count2, go_s):
+def start_countdown(win, images, player_car, player_car2, multiplayer, lap_count, lap_count2, go_s, countdown_s):
+
+    countdown_s.set_volume(1)
+    countdown_s.play()
     font = pygame.font.SysFont(None, 100)
 
     for i in range(3, 1, -1):  # Countdown von 3 bis 1
@@ -170,6 +173,7 @@ def start_countdown(win, images, player_car, player_car2, multiplayer, lap_count
 
     # "GO!" anzeigen
     go_s.play()
+    go_s.set_volume(1)
     draw(win, images, player_car, player_car2, multiplayer, 0, lap_count, lap_count2)  # Strecke & Autos zeichnen
     draw_text("GO!", font, (0, 255, 0), win, WIDTH // 2, HEIGHT // 2)
     pygame.display.update()
@@ -211,13 +215,9 @@ breaking_s2 = pygame.mixer.Sound("Audio/Breaking.mp3")
 pygame.mixer.music.load("Audio/forward-312979.mp3")
 pygame.mixer.music.set_volume(0.5)
 car1chanacc = pygame.mixer.Channel(0)
-car1chanacc.set_volume(0.1, 0.1)
 car1chandec = pygame.mixer.Channel(3)
-car1chandec.set_volume(0.1, 0.1)
 car2chanacc = pygame.mixer.Channel(1)
-car2chanacc.set_volume(0.1, 0.1)
 car2chandec = pygame.mixer.Channel(4)
-car2chandec.set_volume(0.1, 0.1)
 car1col = pygame.mixer.Channel(5)
 car2col = pygame.mixer.Channel(6)
 effectchan = pygame.mixer.Channel(2)
@@ -392,8 +392,8 @@ lap_count2 = 0
 
 start_screen()
 multiplayer = options_screen()
-countdown_s.play()
-start_countdown(WIN, images, player_car, player_car2, multiplayer, lap_count, lap_count2, go_s)  # Starte den Countdown
+
+start_countdown(WIN, images, player_car, player_car2, multiplayer, lap_count, lap_count2, go_s, countdown_s)  # Starte den Countdown
 single_timer = 0  # Timer nach dem Countdown starten
 last_time = time.time()  # Zeitpunkt des Rennstarts speichern
 
@@ -432,7 +432,6 @@ while running:
         player_car.move_forward(delta_time)
         if not car1chanacc.get_busy():
             car1chanacc.play(acceleration_s)
-
     if keys[pygame.K_DOWN]:
         moved = True
         player_car.move_backward(delta_time)
@@ -440,10 +439,21 @@ while running:
             car1chandec.play(breaking_s)
     if keys[pygame.K_ESCAPE]:
         running = False
+    if keys[pygame.K_RETURN]:
+        player_car.reset()
+        pygame.mixer.stop()
+        timer_reset()
+        single_timer = 0
+        finish_timer = 0
+        finish_timer2 = 0
+        start_countdown(WIN, images, player_car, player_car2, multiplayer, lap_count, lap_count2, go_s, countdown_s)
+
     if not moved:
         player_car.reduce_speed(delta_time)
 
+
 #Selber
+
     if multiplayer:
         moved2 = False
         if keys[pygame.K_a]:

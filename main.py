@@ -92,7 +92,37 @@ def options_screen():
 
         pygame.display.flip()
 
+def map_screen():
+    font = pygame.font.SysFont(None, 100)
 
+
+    while True:
+
+        WIN.fill((144, 238, 144))
+        map_1 = pygame.Rect(WIDTH // 4 - 150, HEIGHT // 4 - 0, 300, 60)
+        map_2 = pygame.Rect(WIDTH // 2 + 150, HEIGHT // 4 - 0, 300, 60)
+        map_3 = pygame.Rect(WIDTH // 4 - 150, HEIGHT // 1.5 - 0, 300, 60)
+        map_4 = pygame.Rect(WIDTH // 2 + 150, HEIGHT // 1.5 - 0, 300, 60)
+        pygame.draw.rect(WIN, (0, 200, 0), map_1)
+        pygame.draw.rect(WIN, (0, 200, 0), map_2)
+        pygame.draw.rect(WIN, (0, 200, 0), map_3)
+        pygame.draw.rect(WIN, (0, 200, 0), map_4)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if map_1.collidepoint(event.pos):
+                    return 0
+                if map_2.collidepoint(event.pos):
+                    return 1
+                if map_3.collidepoint(event.pos):
+                    return 2
+                if map_4.collidepoint(event.pos):
+                    return 3
+
+        pygame.display.flip()
 
 
 #Chatgpt/selber bearbeitet
@@ -200,12 +230,20 @@ FINISH_POSITION = (99, 325)
 FINISH_MASK = pygame.mask.from_surface(FINISH)
 
 GCAR = scale_image(pygame.image.load("Sprites/green-car.png"), 0.5)
-BORDERS = pygame.image.load("Sprites/Borders-Photoroom.png")
+BORDERS_1 = pygame.image.load("Sprites/Borders-Photoroom.png")
+BORDERS_2 = pygame.image.load("Sprites/Border2.png")
+BORDERS_3 = pygame.image.load("Sprites/Borders-Photoroom.png")
+BORDERS_4 = pygame.image.load("Sprites/Borders-Photoroom.png")
 GRASS = scale_image(pygame.image.load("Sprites/Hintergrund.png"), 1)
 PCAR = scale_image(pygame.image.load("Sprites/purple-car.png"), 0.8)
 RCAR = scale_image(pygame.image.load("Sprites/red-car.png"), 0.5)
 WCAR = scale_image(pygame.image.load("Sprites/white-car.png"), 0.8)
-TRACK = pygame.image.load("Sprites/Track-Photoroom.png")
+TRACK_1 = pygame.image.load("Sprites/Track-Photoroom.png")
+TRACK_2 = pygame.image.load("Sprites/Track2.png")
+TRACK_3 = pygame.image.load("Sprites/Track-Photoroom.png")
+TRACK_4 = pygame.image.load("Sprites/Track-Photoroom.png")
+track_array = [TRACK_1, TRACK_2, TRACK_3, TRACK_4]
+border_array = [BORDERS_1, BORDERS_2, BORDERS_3, BORDERS_4]
 Startbildschirm = pygame.image.load("Sprites/Startbildschirm.png")
 Startbildschirm.set_colorkey((0,0,0))
 Startbildschirm_Auto = pygame.image.load("Sprites/Startbildschirm_Auto-fotor-bg-remover-20250326134022.png")
@@ -235,10 +273,7 @@ car2col = pygame.mixer.Channel(6)
 effectchan = pygame.mixer.Channel(2)
 
 
-
-TRACK_BORDER_MASK = pygame.mask.from_surface(BORDERS)
-#Videoserie: Pygame Car Racing Tutorial
-WIDTH, HEIGHT = TRACK.get_width(), TRACK.get_height()
+WIDTH, HEIGHT = BORDERS_2.get_width(), BORDERS_2.get_height()
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Car go vroom vroom 3")
 finish_timer = 0
@@ -395,7 +430,6 @@ def draw(win, images, player_car, player_car2, multiplayer, single_timer, lap_co
 
 running = True
 clock = pygame.time.Clock()
-images = [(GRASS, (0, 0)), (TRACK, (0, 0)), (FINISH, FINISH_POSITION), (BORDERS, (0, 0))]
 player_car = PlayerCar(4, 2)
 player_car2 = PlayerCar2(4, 2)
 
@@ -405,6 +439,12 @@ lap_count2 = 0
 start_screen()
 multiplayer = options_screen()
 
+array_num = map_screen()
+selected_track = track_array[array_num]
+selected_border = border_array[array_num]
+TRACK_BORDER_MASK = pygame.mask.from_surface(selected_border)
+images = [(GRASS, (0, 0)), (selected_track, (0, 0)), (FINISH, FINISH_POSITION), (selected_border, (0, 0))]
+#Videoserie: Pygame Car Racing Tutorial
 single_timer = 0  # Timer nach dem Countdown starten
 
 while running:
@@ -486,6 +526,11 @@ while running:
         pygame.mixer.stop()
         pygame.mixer.music.stop()
         multiplayer = options_screen()
+        array_num = map_screen()
+        selected_track = track_array[array_num]
+        selected_border = border_array[array_num]
+        TRACK_BORDER_MASK = pygame.mask.from_surface(selected_border)
+        images = [(GRASS, (0, 0)), (selected_track, (0, 0)), (FINISH, FINISH_POSITION), (selected_border, (0, 0))]
         go_played = False
     if not moved:
         player_car.reduce_speed(delta_time)

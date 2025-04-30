@@ -408,14 +408,19 @@ last_time = time.time()  # Zeitpunkt des Rennstarts speichern
 while running:
     if not pygame.mixer.music.get_busy():
         pygame.mixer.music.play()
-    if not go_played:
-        go_played = start_countdown(WIN, images, player_car, player_car2, multiplayer, lap_count, lap_count2, go_s, countdown_s)
 
     delta_time = time.time() - last_time
     delta_time *= 60
     last_time = time.time()
+
     if not multiplayer:
         single_timer += 1/60 * delta_time
+
+    if not go_played:
+        go_played = start_countdown(WIN, images, player_car, player_car2, multiplayer, lap_count, lap_count2, go_s, countdown_s)
+
+
+
 
     draw(WIN, images, player_car, player_car2, multiplayer, round(single_timer, 1), lap_count, lap_count2)
 
@@ -531,7 +536,8 @@ while running:
 
         else:
             colliding_with_finish = True
-            lap_count += 1
+            if multiplayer:
+                lap_count += 1
             finish_timer = time.time()
             timer_reset()
 

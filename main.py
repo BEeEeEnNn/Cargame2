@@ -100,6 +100,7 @@ def end_screen():
     while True:
         WIN.fill((144, 238, 144))  # Schwarzer Hintergrund
         draw_text(player, font, (255, 255, 255), WIN, WIDTH// 2, HEIGHT // 4)
+        pygame.mixer.music.stop()
 
         # Buttons zeichnen
         pygame.draw.rect(WIN, (0, 200, 0), button_restart)
@@ -115,6 +116,11 @@ def end_screen():
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if button_restart.collidepoint(event.pos):
+                    lap_count = 0
+                    lap_count2 = 0
+                    player_car.reset()
+                    player_car2.reset()
+                    start_countdown(WIN, images, player_car, player_car2, multiplayer, lap_count, lap_count2, go_s,countdown_s)
                     return  # Spiel wird neugestartet
                 if button_exit.collidepoint(event.pos):
                     pygame.quit()
@@ -265,7 +271,7 @@ class AbstractCar:
 
     def draw(self, win):
         self.tleft = blit_rotate_center(win, self.img, (self.x, self.y), self.angle)
-        pygame.display.update()
+        #pygame.display.update()
 
     def move_forward(self, delta_time):
         self.vel = min(self.vel + self.acceleration, self.max_vel)
@@ -378,7 +384,7 @@ def draw(win, images, player_car, player_car2, multiplayer, single_timer, lap_co
         draw_lap_count(win, lap_count)
         draw_lap_count2(win, lap_count2)
 
-    pygame.display.update()
+    #pygame.display.update()
 
 
 running = True
@@ -547,5 +553,5 @@ while running:
 
 
     clock.tick(FPS)
-
+    pygame.display.flip()
 pygame.quit()

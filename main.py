@@ -57,6 +57,7 @@ def single_player_screen():
                 pygame.quit()
             sys.exit()
             if keys[pygame.K_BACKSPACE]:
+                go_played = False
                 options_screen()  # Zurück zu Hauptmenü
                 return
         pygame.display.flip()
@@ -85,6 +86,7 @@ def options_screen():
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if button_single.collidepoint(event.pos):
+
                     return False
                 elif button_multi.collidepoint(event.pos):
                     return True
@@ -121,14 +123,14 @@ def end_screen():
                     lap_count2 = 0
                     player_car.reset()
                     player_car2.reset()
-                    start_countdown(WIN, images, player_car, player_car2, multiplayer, lap_count, lap_count2, go_s,countdown_s)
-                    return  # Spiel wird neugestartet
+                    go_played = False
+                    return False# Spiel wird neugestartet
                 if button_exit.collidepoint(event.pos):
                     pygame.quit()
                     sys.exit()
                 if button_options_screen.collidepoint(event.pos):
                     options_screen() #Zurück zu Hauptmenü
-                    return
+                    return False
         pygame.display.flip()
 
 #ChatGPT
@@ -185,7 +187,7 @@ def start_countdown(win, images, player_car, player_car2, multiplayer, lap_count
     draw_text("GO!", font, (0, 255, 0), win, WIDTH // 2, HEIGHT // 2)
     pygame.display.update()
     pygame.time.delay(1000)
-
+    return True
 
 
 
@@ -213,6 +215,7 @@ bounce_s = pygame.mixer.Sound("Audio/Bounce.mp3")
 carcollision_s = pygame.mixer.Sound("Audio/Collision2.mp3")
 finish_s = pygame.mixer.Sound("Audio/Player_wins.mp3")
 countdown_s = pygame.mixer.Sound("Audio/321.mp3")
+go_played = False
 go_s = pygame.mixer.Sound("Audio/Go.mp3")
 acceleration_s = pygame.mixer.Sound("Audio/Acceleration.mp3")
 breaking_s = pygame.mixer.Sound("Audio/Breaking.mp3")
@@ -399,14 +402,15 @@ lap_count2 = 0
 
 start_screen()
 multiplayer = options_screen()
-
-start_countdown(WIN, images, player_car, player_car2, multiplayer, lap_count, lap_count2, go_s, countdown_s)  # Starte den Countdown
+  # Starte den Countdown
 single_timer = 0  # Timer nach dem Countdown starten
 last_time = time.time()  # Zeitpunkt des Rennstarts speichern
 
 while running:
     if not pygame.mixer.music.get_busy():
         pygame.mixer.music.play()
+    if not go_played:
+        go_played = start_countdown(WIN, images, player_car, player_car2, multiplayer, lap_count, lap_count2, go_s, countdown_s)
 
     delta_time = time.time() - last_time
     delta_time *= 60
@@ -448,6 +452,7 @@ while running:
         running = False #Beenden wenn Escape gedrückt wird
     if keys[pygame.K_RETURN]: #Erneut spielen Funktion mithilfe der Enter-Taste
         if multiplayer:
+
             player_car2.reset() #Autos zurück zur Startposition
             player_car.reset()
             pygame.mixer.stop() #Musik stoppen
@@ -456,14 +461,27 @@ while running:
             finish_timer = 0
             finish_timer2 = 0
             start_countdown(WIN, images, player_car, player_car2, multiplayer, lap_count, lap_count2, go_s, countdown_s)
+
+            player_car2.reset()
+        player_car.reset()
+        pygame.mixer.stop()
+        timer_reset()
+        single_timer = 0
+        finish_timer = 0
+        finish_timer2 = 0
+        go_played = False
+
     if keys[pygame.K_BACKSPACE]:
         player_car.reset()
+        go_played = False
         if multiplayer:
             player_car2.reset()
+
             pygame.mixer.stop()
             pygame.mixer.music.stop()
 
-
+        pygame.mixer.stop()
+        pygame.mixer.music.stop()
         multiplayer = options_screen()
     if not moved:
         player_car.reduce_speed(delta_time)
@@ -526,7 +544,7 @@ while running:
         if lap_count == 3:
             player = "Spieler 1 gewinnt"
             finish_s.play()
-            end_screen()
+            go_played = end_screen()
             player_car.reset()
             player_car2.reset()
             lap_count = 0
@@ -552,7 +570,7 @@ while running:
         if lap_count2 == 3:
             player = "Spieler 2 gewinnt"
             finish_s.play()
-            end_screen()
+            go_played = end_screen()
             player_car.reset()
             player_car2.reset()
             lap_count = 0

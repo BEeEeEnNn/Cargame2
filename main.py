@@ -439,7 +439,11 @@ while running:
         finish_timer = 0
         finish_timer2 = 0
         start_countdown(WIN, images, player_car, player_car2, multiplayer, lap_count, lap_count2, go_s, countdown_s)
-
+    if keys[pygame.K_BACKSPACE]:
+        pygame.mixer.stop()
+        pygame.mixer.music.stop()
+        player_car.reset()
+        options_screen()
     if not moved:
         player_car.reduce_speed(delta_time)
 

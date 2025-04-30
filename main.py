@@ -57,7 +57,6 @@ def single_player_screen():
                 pygame.quit()
             sys.exit()
             if keys[pygame.K_BACKSPACE]:
-                go_played = False
                 options_screen()  # Zurück zu Hauptmenü
                 return
         pygame.display.flip()
@@ -129,6 +128,7 @@ def end_screen():
                     pygame.quit()
                     sys.exit()
                 if button_options_screen.collidepoint(event.pos):
+
                     options_screen() #Zurück zu Hauptmenü
                     return False
         pygame.display.flip()
@@ -403,21 +403,19 @@ lap_count2 = 0
 start_screen()
 multiplayer = options_screen()
 single_timer = 0  # Timer nach dem Countdown starten
-last_time = time.time()  # Zeitpunkt des Rennstarts speichern
 
 while running:
     if not pygame.mixer.music.get_busy():
         pygame.mixer.music.play()
-
+    if not go_played:
+        go_played = start_countdown(WIN, images, player_car, player_car2, multiplayer, lap_count, lap_count2, go_s, countdown_s)
+        last_time = time.time()
     delta_time = time.time() - last_time
     delta_time *= 60
     last_time = time.time()
 
-    if not multiplayer:
+    if not multiplayer and go_played:
         single_timer += 1/60 * delta_time
-
-    if not go_played:
-        go_played = start_countdown(WIN, images, player_car, player_car2, multiplayer, lap_count, lap_count2, go_s, countdown_s)
 
 
 
@@ -462,10 +460,6 @@ while running:
             player_car.reset()
             pygame.mixer.stop() #Musik stoppen
              #Timer neustarten
-
-
-            start_countdown(WIN, images, player_car, player_car2, multiplayer, lap_count, lap_count2, go_s, countdown_s)
-
             player_car2.reset()
         player_car.reset()
         pygame.mixer.stop()
@@ -476,8 +470,10 @@ while running:
         go_played = False
 
     if keys[pygame.K_BACKSPACE]:
+        timer_reset()
+        single_timer = 0
+        finish_timer = 0
         player_car.reset()
-        go_played = False
         if multiplayer:
             player_car2.reset()
 
@@ -487,6 +483,7 @@ while running:
         pygame.mixer.stop()
         pygame.mixer.music.stop()
         multiplayer = options_screen()
+        go_played = False
     if not moved:
         player_car.reduce_speed(delta_time)
 

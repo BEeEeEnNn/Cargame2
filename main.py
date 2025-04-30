@@ -50,8 +50,16 @@ def single_player_screen():
     button_rect = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 - 30, 200, 60)
 
     while True:
-        WIN.fill((144, 238, 144))  # Schwarzer Hintergrund
+        WIN.fill((144, 238, 144)) # Schwarzer Hintergrund
 
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+            sys.exit()
+            if keys[pygame.K_BACKSPACE]:
+                options_screen()  # Zurück zu Hauptmenü
+                return
+        pygame.display.flip()
 #selber
 def options_screen():
     font = pygame.font.SysFont(None, 100)

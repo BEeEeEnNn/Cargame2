@@ -177,7 +177,7 @@ def start_countdown(win, images, player_car, player_car2, multiplayer, lap_count
         draw(win, images, player_car, player_car2, multiplayer, 0, lap_count, lap_count2)  # Strecke & Autos zeichnen
         draw_text(str(i), font, (255, 255, 255), win, WIDTH // 2, HEIGHT // 2)  # Countdown-Zahl
         pygame.display.update()
-        pygame.time.delay(random.randint(500, 2500))  # 1 Sekunde warten
+        pygame.time.delay(1000)  # 1 Sekunde warten
 
 
     # "GO!" anzeigen
@@ -419,7 +419,7 @@ while running:
         single_timer += 1/60 * delta_time
 
     draw(WIN, images, player_car, player_car2, multiplayer, round(single_timer, 1), lap_count, lap_count2)
-    draw_lap_count(WIN, lap_count)
+
 
 
     for event in pygame.event.get():
@@ -452,14 +452,14 @@ while running:
         running = False #Beenden wenn Escape gedrückt wird
     if keys[pygame.K_RETURN]: #Erneut spielen Funktion mithilfe der Enter-Taste
         if multiplayer:
-
+            lap_count = 0
+            lap_count2 = 0
             player_car2.reset() #Autos zurück zur Startposition
             player_car.reset()
             pygame.mixer.stop() #Musik stoppen
-            timer_reset() #Timer neustarten
-            single_timer = 0
-            finish_timer = 0
-            finish_timer2 = 0
+             #Timer neustarten
+
+
             start_countdown(WIN, images, player_car, player_car2, multiplayer, lap_count, lap_count2, go_s, countdown_s)
 
             player_car2.reset()

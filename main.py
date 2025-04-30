@@ -404,7 +404,7 @@ lap_count2 = 0
 
 start_screen()
 multiplayer = options_screen()
-map_screen()
+
 single_timer = 0  # Timer nach dem Countdown starten
 
 while running:

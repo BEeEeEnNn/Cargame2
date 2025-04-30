@@ -78,7 +78,7 @@ def options_screen():
         pygame.draw.rect(WIN, (0, 200, 0), button_multi)
         draw_text("1 Spieler", pygame.font.SysFont(None, 40), (255, 255, 255), WIN, WIDTH // 2, HEIGHT // 2)
         draw_text("2 Spieler", pygame.font.SysFont(None, 40), (255, 255, 255), WIN, WIDTH // 2, HEIGHT // 2 + 80)
-
+        multiplayer: bool
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -87,7 +87,9 @@ def options_screen():
                 if button_single.collidepoint(event.pos):
                     return False
                 elif button_multi.collidepoint(event.pos):
-                   return True
+
+                    return True
+
         pygame.display.flip()
 
 
@@ -446,6 +448,8 @@ while running:
     if keys[pygame.K_ESCAPE]:
         running = False
     if keys[pygame.K_RETURN]:
+        if multiplayer:
+            player_car2.reset()
         player_car.reset()
         pygame.mixer.stop()
         timer_reset()
@@ -454,10 +458,14 @@ while running:
         finish_timer2 = 0
         start_countdown(WIN, images, player_car, player_car2, multiplayer, lap_count, lap_count2, go_s, countdown_s)
     if keys[pygame.K_BACKSPACE]:
+        player_car.reset()
+        if multiplayer:
+            player_car2.reset()
         pygame.mixer.stop()
         pygame.mixer.music.stop()
-        player_car.reset()
-        options_screen()
+
+
+        multiplayer = options_screen()
     if not moved:
         player_car.reduce_speed(delta_time)
 

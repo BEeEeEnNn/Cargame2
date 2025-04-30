@@ -50,7 +50,7 @@ def single_player_screen():
     button_rect = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 - 30, 200, 60)
 
     while True:
-        WIN.fill((144, 238, 144)) # Schwarzer Hintergrund
+        WIN.fill((144, 238, 144)) # Grüner Hintergrund
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -93,6 +93,8 @@ def options_screen():
         pygame.display.flip()
 
 
+
+
 #Chatgpt/selber bearbeitet
 def end_screen():
     font = pygame.font.SysFont(None, 100)
@@ -123,14 +125,14 @@ def end_screen():
                     player_car.reset()
                     player_car2.reset()
                     go_played = False
-                    return False# Spiel wird neugestartet
+                    return False, False# Spiel wird neugestartet
                 if button_exit.collidepoint(event.pos):
                     pygame.quit()
                     sys.exit()
                 if button_options_screen.collidepoint(event.pos):
 
                     options_screen() #Zurück zu Hauptmenü
-                    return False
+                    return False, options_screen()
         pygame.display.flip()
 
 #ChatGPT
@@ -402,10 +404,11 @@ lap_count2 = 0
 
 start_screen()
 multiplayer = options_screen()
+map_screen()
 single_timer = 0  # Timer nach dem Countdown starten
 
 while running:
-    if not pygame.mixer.music.get_busy():
+    if not pygame.mixer.music.get_busy() and go_played:
         pygame.mixer.music.play()
     if not go_played:
         go_played = start_countdown(WIN, images, player_car, player_car2, multiplayer, lap_count, lap_count2, go_s, countdown_s)
@@ -546,7 +549,7 @@ while running:
         if lap_count == 3:
             player = "Spieler 1 gewinnt"
             finish_s.play()
-            go_played = end_screen()
+            go_played, multiplayer = end_screen()
             player_car.reset()
             player_car2.reset()
             lap_count = 0
@@ -572,7 +575,7 @@ while running:
         if lap_count2 == 3:
             player = "Spieler 2 gewinnt"
             finish_s.play()
-            go_played = end_screen()
+            go_played, multiplayer = end_screen()
             player_car.reset()
             player_car2.reset()
             lap_count = 0

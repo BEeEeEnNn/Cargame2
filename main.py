@@ -99,36 +99,50 @@ def options_screen():
         pygame.display.flip()
 
 def map_screen():
-    font = pygame.font.SysFont(None, 100)
-
+    font = pygame.font.SysFont(None, 50)
+    title_font = pygame.font.SysFont(None, 100)
+    button_color = (0, 200, 0)
+    text_color = (255, 255, 255)
 
     while True:
-
         WIN.fill((144, 238, 144))
-        map_1 = pygame.Rect(WIDTH // 4 - 150, HEIGHT // 4 - 0, 300, 60)
-        map_2 = pygame.Rect(WIDTH // 2 + 150, HEIGHT // 4 - 0, 300, 60)
-        map_3 = pygame.Rect(WIDTH // 4 - 150, HEIGHT // 1.5 - 0, 300, 60)
-        map_4 = pygame.Rect(WIDTH // 2 + 150, HEIGHT // 1.5 - 0, 300, 60)
-        pygame.draw.rect(WIN, (0, 200, 0), map_1)
-        pygame.draw.rect(WIN, (0, 200, 0), map_2)
-        pygame.draw.rect(WIN, (0, 200, 0), map_3)
-        pygame.draw.rect(WIN, (0, 200, 0), map_4)
+
+        # Überschrift oben mittig
+        title_surface = title_font.render("Wähle die Map", True, (0, 100, 0))
+        WIN.blit(title_surface, (WIDTH // 2 - title_surface.get_width() // 2, 50))
+
+        # Button-Positionen
+        buttons = [
+            pygame.Rect(WIDTH // 4 - 150, HEIGHT // 4, 300, 60),        # Map 1
+            pygame.Rect(WIDTH // 2 + 150, HEIGHT // 4, 300, 60),        # Map 2
+            pygame.Rect(WIDTH // 4 - 150, HEIGHT // 1.5, 300, 60),      # Map 3
+            pygame.Rect(WIDTH // 2 + 150, HEIGHT // 1.5, 300, 60),      # Map 4
+        ]
+
+        # Text auf den Buttons
+        button_labels = ["Map 1", "Map 2", "Map 3", "Map 4"]
+
+        for i, rect in enumerate(buttons):
+            pygame.draw.rect(WIN, button_color, rect)
+
+            # Button-Text (mittig im Button)
+            text_surface = font.render(button_labels[i], True, text_color)
+            WIN.blit(text_surface, (
+                rect.centerx - text_surface.get_width() // 2,
+                rect.centery - text_surface.get_height() // 2
+            ))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if map_1.collidepoint(event.pos):
-                    return 0
-                if map_2.collidepoint(event.pos):
-                    return 1
-                if map_3.collidepoint(event.pos):
-                    return 2
-                if map_4.collidepoint(event.pos):
-                    return 3
+                for i, rect in enumerate(buttons):
+                    if rect.collidepoint(event.pos):
+                        return i
 
         pygame.display.flip()
+
 
 
 #Chatgpt/selber bearbeitet
@@ -237,7 +251,6 @@ FINISH_MASK = pygame.mask.from_surface(FINISH)
 GCAR = scale_image(pygame.image.load("Sprites/green-car.png"), 0.5)
 BORDERS_1 = pygame.image.load("Sprites/Borders-Photoroom.png")
 BORDERS_2 = pygame.image.load("Sprites/Track2border....png")
-BORDERS_3 = pygame.image.load("Sprites/Borders-Photoroom.png")
 BORDERS_3 = pygame.image.load("Sprites/Border3-Photoroom.png")
 BORDERS_4 = pygame.image.load("Sprites/Border4-Photoroom.png")
 GRASS = scale_image(pygame.image.load("Sprites/Hintergrund.png"), 1)

@@ -438,6 +438,7 @@ lap_count2 = 0
 
 start_screen()
 multiplayer = options_screen()
+
 array_num = map_screen()
 selected_track = track_array[array_num]
 selected_border = border_array[array_num]

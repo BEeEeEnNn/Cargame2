@@ -187,7 +187,7 @@ def draw_timer(win, single_timer):
     font = pygame.font.SysFont(None, 50)  # Schriftart mit Größe 40
     text = f"Zeit:{single_timer}"
     # Zeichne den Text an einer gut sichtbaren Position (z.B. oben links)
-    draw_text(text, font, (255, 0, 0), win, 1130 // 2, 50)  # Weißer Text bei Position (Mitte oben)
+    draw_text(text, font, (255, 0, 0), win, 1130 // 2, 25)  # Weißer Text bei Position (Mitte oben)
 #selber
 def timer_reset():
     global single_timer
@@ -233,6 +233,8 @@ GCAR = scale_image(pygame.image.load("Sprites/green-car.png"), 0.5)
 BORDERS_1 = pygame.image.load("Sprites/Borders-Photoroom.png")
 BORDERS_2 = pygame.image.load("Sprites/Track2border....png")
 BORDERS_3 = pygame.image.load("Sprites/Borders-Photoroom.png")
+BORDERS_2 = pygame.image.load("Sprites/Border2.png")
+BORDERS_3 = pygame.image.load("Sprites/Border3-Photoroom.png")
 BORDERS_4 = pygame.image.load("Sprites/Borders-Photoroom.png")
 GRASS = scale_image(pygame.image.load("Sprites/Hintergrund.png"), 1)
 PCAR = scale_image(pygame.image.load("Sprites/purple-car.png"), 0.8)
@@ -241,6 +243,8 @@ WCAR = scale_image(pygame.image.load("Sprites/white-car.png"), 0.8)
 TRACK_1 = pygame.image.load("Sprites/Track-Photoroom.png")
 TRACK_2 = pygame.image.load("Sprites/Track2...-Photoroom.png")
 TRACK_3 = pygame.image.load("Sprites/Track-Photoroom.png")
+TRACK_2 = pygame.image.load("Sprites/Track2.png")
+TRACK_3 = pygame.image.load("Sprites/Track3-Photoroom.png")
 TRACK_4 = pygame.image.load("Sprites/Track-Photoroom.png")
 track_array = [TRACK_1, TRACK_2, TRACK_3, TRACK_4]
 border_array = [BORDERS_1, BORDERS_2, BORDERS_3, BORDERS_4]

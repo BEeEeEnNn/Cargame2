@@ -4,6 +4,13 @@ import pygame, time, math, sys, random
 
 pygame.init()
 
+
+
+
+#MultizurückResultiertin keinem Map screen
+#
+
+
 #Alles mit "delta time": https://www.youtube.com/watch?v=OmkAUzvwsDk
 
 single_timer = 0
@@ -85,7 +92,6 @@ def options_screen():
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if button_single.collidepoint(event.pos):
-
                     return False
                 elif button_multi.collidepoint(event.pos):
                     return True
@@ -126,7 +132,7 @@ def map_screen():
 
 
 #Chatgpt/selber bearbeitet
-def end_screen():
+def end_screen(multiplayer):
     font = pygame.font.SysFont(None, 100)
     button_restart = pygame.Rect(WIDTH // 2 - 150, HEIGHT // 2 - 30, 300, 60)
     button_exit = pygame.Rect(WIDTH // 2 - 150, HEIGHT // 2 + 50, 300, 60)
@@ -155,14 +161,13 @@ def end_screen():
                     player_car.reset()
                     player_car2.reset()
                     go_played = False
-                    return False, False# Spiel wird neugestartet
+                    return False, multiplayer, map_screen()# Spiel wird neugestartet
                 if button_exit.collidepoint(event.pos):
                     pygame.quit()
                     sys.exit()
                 if button_options_screen.collidepoint(event.pos):
 
-                    options_screen() #Zurück zu Hauptmenü
-                    return False, options_screen()
+                    return False, options_screen(), map_screen()
         pygame.display.flip()
 
 #ChatGPT
@@ -233,7 +238,6 @@ GCAR = scale_image(pygame.image.load("Sprites/green-car.png"), 0.5)
 BORDERS_1 = pygame.image.load("Sprites/Borders-Photoroom.png")
 BORDERS_2 = pygame.image.load("Sprites/Track2border....png")
 BORDERS_3 = pygame.image.load("Sprites/Borders-Photoroom.png")
-BORDERS_2 = pygame.image.load("Sprites/Border2.png")
 BORDERS_3 = pygame.image.load("Sprites/Border3-Photoroom.png")
 BORDERS_4 = pygame.image.load("Sprites/Borders-Photoroom.png")
 GRASS = scale_image(pygame.image.load("Sprites/Hintergrund.png"), 1)
@@ -242,8 +246,6 @@ RCAR = scale_image(pygame.image.load("Sprites/red-car.png"), 0.5)
 WCAR = scale_image(pygame.image.load("Sprites/white-car.png"), 0.8)
 TRACK_1 = pygame.image.load("Sprites/Track-Photoroom.png")
 TRACK_2 = pygame.image.load("Sprites/Track2...-Photoroom.png")
-TRACK_3 = pygame.image.load("Sprites/Track-Photoroom.png")
-TRACK_2 = pygame.image.load("Sprites/Track2.png")
 TRACK_3 = pygame.image.load("Sprites/Track3-Photoroom.png")
 TRACK_4 = pygame.image.load("Sprites/Track-Photoroom.png")
 track_array = [TRACK_1, TRACK_2, TRACK_3, TRACK_4]
@@ -298,6 +300,7 @@ class AbstractCar:
         self.img = self.IMG
         self.max_vel = max_vel
         self.vel = 0
+        self.last_vel = 0
         self.rotation_vel = rotation_vel
         self.angle = 0
         self.x, self.y = self.START_POS
@@ -319,10 +322,12 @@ class AbstractCar:
         #pygame.display.update()
 
     def move_forward(self, delta_time):
+        self.last_vel = self.vel
         self.vel = min(self.vel + self.acceleration, self.max_vel)
         self.move(delta_time)
 
     def move_backward(self, delta_time):
+        self.last_vel = self.vel
         self.vel = max(self.vel - self.acceleration, -self.max_vel / 2)#Selber geändert
         self.move(delta_time)
 
@@ -338,6 +343,8 @@ class AbstractCar:
         
 
     def reduce_speed(self, delta_time):
+        if self.vel != 0:
+            self.last_vel = self.vel
         self.vel = max(self.vel - self.acceleration / 2, 0)
         self.move(delta_time)
 
@@ -378,6 +385,8 @@ class PlayerCar(AbstractCar):
         self.move(delta_time)
 
     def bounce(self, delta_time):
+        if self.vel == 0:
+            self.vel = self.last_vel
         self.vel = -self.vel / 1.5
         self.move(delta_time)
 
@@ -408,8 +417,10 @@ class PlayerCar2(AbstractCar):
             self.move(delta_time)
 
     def bounce(self, delta_time):
-            self.vel = -self.vel / 1.5
-            self.move(delta_time)
+        if self.vel == 0:
+            self.vel = self.last_vel
+        self.vel = -self.vel / 1.5
+        self.move(delta_time)
 
     def car_bounce(self, delta_time):
             self.vel = -self.vel / 1.5
@@ -508,13 +519,15 @@ while running:
             pygame.mixer.stop() #Musik stoppen
              #Timer neustarten
             player_car2.reset()
-        player_car.reset()
-        pygame.mixer.stop()
-        timer_reset()
-        single_timer = 0
-        finish_timer = 0
-        finish_timer2 = 0
-        go_played = False
+            go_played = False
+        else:
+            player_car.reset()
+            pygame.mixer.stop()
+            timer_reset()
+            single_timer = 0
+            finish_timer = 0
+            finish_timer2 = 0
+            go_played = False
 
     if keys[pygame.K_BACKSPACE]:
         timer_reset()
@@ -598,7 +611,11 @@ while running:
         if lap_count == 3:
             player = "Spieler 1 gewinnt"
             finish_s.play()
-            go_played, multiplayer = end_screen()
+            go_played, multiplayer, array_num = end_screen(multiplayer)
+            selected_track = track_array[array_num]
+            selected_border = border_array[array_num]
+            TRACK_BORDER_MASK = pygame.mask.from_surface(selected_border)
+            images = [(GRASS, (0, 0)), (selected_track, (0, 0)), (FINISH, FINISH_POSITION), (selected_border, (0, 0))]
             player_car.reset()
             player_car2.reset()
             lap_count = 0
@@ -624,7 +641,11 @@ while running:
         if lap_count2 == 3:
             player = "Spieler 2 gewinnt"
             finish_s.play()
-            go_played, multiplayer = end_screen()
+            go_played, multiplayer,array_num = end_screen(multiplayer)
+            selected_track = track_array[array_num]
+            selected_border = border_array[array_num]
+            TRACK_BORDER_MASK = pygame.mask.from_surface(selected_border)
+            images = [(GRASS, (0, 0)), (selected_track, (0, 0)), (FINISH, FINISH_POSITION), (selected_border, (0, 0))]
             player_car.reset()
             player_car2.reset()
             lap_count = 0

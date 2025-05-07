@@ -5,12 +5,6 @@ import pygame, time, math, sys, random
 pygame.init()
 
 
-
-
-#MultizurückResultiertin keinem Map screen
-#
-
-
 #Alles mit "delta time": https://www.youtube.com/watch?v=OmkAUzvwsDk
 
 single_timer = 0
@@ -23,7 +17,7 @@ def scale_image(img, factor):
 def blit_rotate_center(win, image, top_left, angle):
     rotated_image = pygame.transform.rotate(image, angle)
     new_rect = rotated_image.get_rect(center=image.get_rect(topleft=top_left).center)
-    win.blit(rotated_image, new_rect.topleft)
+    win.blit(rotated_image, new_rect.topleft) #Fehlerbehebung Maske
     return new_rect.topleft
 
 #ChatGPT/selber bearbeitet
@@ -35,8 +29,8 @@ def start_screen():
     while True:
         WIN.fill((144, 238, 144))
         WIN.blit(Startbildschirm, (0, 0))
-        WIN.blit(Startbildschirm_Auto, (-x, 220))
-        WIN.blit(Startbildschirm_AutoBlau, (-x * 1.1, 350))
+        WIN.blit(Startbildschirm_Auto, (-x, 220)) #Selbst gemacht (Auto)
+        WIN.blit(Startbildschirm_AutoBlau, (-x * 1.1, 350)) #Selbst gemacht (Auto)
         x += -5
         draw_text("Car Go Vroom Vroom 3", font, (0, 0, 0), WIN, WIDTH // 2, HEIGHT // 4)
 
@@ -86,15 +80,15 @@ def options_screen():
         pygame.draw.rect(WIN, (0, 200, 0), button_multi)
         draw_text("1 Spieler", pygame.font.SysFont(None, 40), (255, 255, 255), WIN, WIDTH // 2, HEIGHT // 2)
         draw_text("2 Spieler", pygame.font.SysFont(None, 40), (255, 255, 255), WIN, WIDTH // 2, HEIGHT // 2 + 80)
-        multiplayer: bool
+        multiplayer: bool #Nicht immer Multiplayer
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if button_single.collidepoint(event.pos):
+                if button_single.collidepoint(event.pos): #Click zu Singleplayer
                     return False
-                elif button_multi.collidepoint(event.pos):
+                elif button_multi.collidepoint(event.pos): #Click zu Multiplayer
                     return True
 
         pygame.display.flip()
@@ -128,10 +122,7 @@ def map_screen():
 
             # Button-Text (mittig im Button)
             text_surface = font.render(button_labels[i], True, text_color)
-            WIN.blit(text_surface, (
-                rect.centerx - text_surface.get_width() // 2,
-                rect.centery - text_surface.get_height() // 2
-            ))
+            WIN.blit(text_surface, (rect.centerx - text_surface.get_width() // 2,rect.centery - text_surface.get_height() // 2))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -171,6 +162,7 @@ def end_screen(multiplayer):
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if button_restart.collidepoint(event.pos):
+                    #Reset der Autos und Runden
                     lap_count = 0
                     lap_count2 = 0
                     player_car.reset()
@@ -180,7 +172,7 @@ def end_screen(multiplayer):
                 if button_exit.collidepoint(event.pos):
                     pygame.quit()
                     sys.exit()
-                if button_options_screen.collidepoint(event.pos):
+                if button_options_screen.collidepoint(event.pos): # Zurück zum options screen
 
                     return False, options_screen(), map_screen()
         pygame.display.flip()
@@ -195,8 +187,8 @@ def draw_text(text, font, color, surface, x, y):
 def draw_lap_count(win, lap_count):
     font = pygame.font.SysFont(None, 50)  # Schriftart mit Größe 40
     text = f"Runde: {lap_count+1}""/3" # Text der Runde
-    # Zeichne den Text an einer gut sichtbaren Position (z.B. oben links)
-    draw_text(text, font, (255, 0, 0), win, 2000 // 2, 50)  # Weißer Text bei Position (Mitte oben)
+    # Zeichne den Text an einer gut sichtbaren Position
+    draw_text(text, font, (255, 0, 0), win, 2000 // 2, 50)  # Weisser Text bei Position (Mitte oben)
 #selber bearbeitet
 def draw_lap_count2(win, lap_count2):
     font = pygame.font.SysFont(None, 50)  # Schriftart mit Größe 40
@@ -274,15 +266,16 @@ TRACK_1 = pygame.image.load("Sprites/Track-Photoroom.png")
 TRACK_2 = pygame.image.load("Sprites/Track2...-Photoroom.png")
 TRACK_3 = pygame.image.load("Sprites/Track3-Photoroom.png")
 TRACK_4 = pygame.image.load("Sprites/Track4-Photoroom.png")
-
-track_array = [TRACK_1, TRACK_2, TRACK_3, TRACK_4]
-border_array = [BORDERS_1, BORDERS_2, BORDERS_3, BORDERS_4]
 Startbildschirm = pygame.image.load("Sprites/Startbildschirm.png")
 Startbildschirm.set_colorkey((0,0,0))
 Startbildschirm_Auto = pygame.image.load("Sprites/Startbildschirm_Auto-fotor-bg-remover-20250326134022.png")
 Startbildschirm_AutoBlau = pygame.image.load("Sprites/Startbildschirm_AutoBlau-fotor-bg-remover-2025032614154.png")
 
+#Liste mit Tracks/Borders für die Auswahl der Maps
+track_array = [TRACK_1, TRACK_2, TRACK_3, TRACK_4]
+border_array = [BORDERS_1, BORDERS_2, BORDERS_3, BORDERS_4]
 
+#Audiodateien
 bust = pygame.mixer.Sound("Audio/Bust.mp3")
 bounce_s = pygame.mixer.Sound("Audio/Bounce.mp3")
 carcollision_s = pygame.mixer.Sound("Audio/Collision2.mp3")
@@ -294,18 +287,19 @@ acceleration_s = pygame.mixer.Sound("Audio/Acceleration.mp3")
 breaking_s = pygame.mixer.Sound("Audio/Breaking.mp3")
 acceleration_s2 = pygame.mixer.Sound("Audio/Acceleration.mp3")
 breaking_s2 = pygame.mixer.Sound("Audio/Breaking.mp3")
-
 pygame.mixer.music.load("Audio/forward-312979.mp3")
 pygame.mixer.music.set_volume(0.5)
+
+#Channels für Audiowiedergabe
 car1chanacc = pygame.mixer.Channel(0)
-car1chandec = pygame.mixer.Channel(3)
 car2chanacc = pygame.mixer.Channel(1)
+effectchan = pygame.mixer.Channel(2)
+car1chandec = pygame.mixer.Channel(3)
 car2chandec = pygame.mixer.Channel(4)
 car1col = pygame.mixer.Channel(5)
 car2col = pygame.mixer.Channel(6)
-effectchan = pygame.mixer.Channel(2)
 
-
+#Scalierung des Fensters basierend auf Grösse der Borders
 WIDTH, HEIGHT = BORDERS_2.get_width(), BORDERS_2.get_height()
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Car go vroom vroom 3")
@@ -314,11 +308,10 @@ finish_timer2 = 0
 colliding_with_finish = False
 colliding_with_finish_2 = False
 
-
-
+#Delta Time
 FPS = 60
-
 last_time = time.time()
+
 # Videoserie: Pygame Car Racing Tutorial
 can_collide = True
 class AbstractCar:
@@ -621,7 +614,6 @@ while running:
     if finish_point_of_collision != None and colliding_with_finish == False:
         if finish_point_of_collision[1] == 0:
             player_car.reset()
-
 
 
 

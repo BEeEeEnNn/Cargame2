@@ -14,6 +14,7 @@ pygame.init()
 #Alles mit "delta time": https://www.youtube.com/watch?v=OmkAUzvwsDk
 
 single_timer = 0
+
 #Videoserie:Pygame Car Racing Tutorial
 def scale_image(img, factor):
     size = round(img.get_width() * factor), round(img.get_height() * factor)
@@ -184,6 +185,7 @@ def end_screen(multiplayer):
                     return False, options_screen(), map_screen()
         pygame.display.flip()
 
+
 #ChatGPT
 def draw_text(text, font, color, surface, x, y):
     text_obj = font.render(text, True, color)
@@ -207,6 +209,17 @@ def draw_timer(win, single_timer):
     text = f"Zeit:{single_timer}"
     # Zeichne den Text an einer gut sichtbaren Position (z.B. oben links)
     draw_text(text, font, (255, 0, 0), win, 1130 // 2, 25)  # Weißer Text bei Position (Mitte oben)
+
+def draw_reset(win):
+    font = pygame.font.SysFont(None, 25)  # Schriftart mit Größe 40
+    text = "'ENTER' für reset"
+    draw_text(text, font, (255, 255, 255), win, 1130 // 2, 600)
+
+def draw_back2menu(win):
+    font = pygame.font.SysFont(None, 25)  # Schriftart mit Größe 40
+    text = "'BACKSPACE' für Hauptmenü"
+    draw_text(text, font, (255, 255, 255), win, 1130 // 2, 630)
+
 #selber
 def timer_reset():
     global single_timer
@@ -253,7 +266,7 @@ BORDERS_1 = pygame.image.load("Sprites/Borders-Photoroom.png")
 BORDERS_2 = pygame.image.load("Sprites/Track2border....png")
 BORDERS_3 = pygame.image.load("Sprites/Border3-Photoroom.png")
 BORDERS_4 = pygame.image.load("Sprites/Border4-Photoroom.png")
-GRASS = scale_image(pygame.image.load("Sprites/Hintergrund.png"), 1)
+GRASS = scale_image(pygame.image.load("Sprites/Hintergrund neu.png"), 1)
 PCAR = scale_image(pygame.image.load("Sprites/purple-car.png"), 0.8)
 RCAR = scale_image(pygame.image.load("Sprites/red-car.png"), 0.5)
 WCAR = scale_image(pygame.image.load("Sprites/white-car.png"), 0.8)
@@ -318,7 +331,7 @@ class AbstractCar:
         self.rotation_vel = rotation_vel
         self.angle = 0
         self.x, self.y = self.START_POS
-        self.acceleration = 0.1
+        self.acceleration = 0.05
         self.tleft = (0, 0)
 
     def rotate(self,delta_time : float, left=False, right=False):
@@ -446,6 +459,8 @@ def draw(win, images, player_car, player_car2, multiplayer, single_timer, lap_co
     for img, pos in images:
         win.blit(img, pos)
     player_car.draw(win)
+    draw_reset(win)
+    draw_back2menu(win)
 
     if not multiplayer:
         draw_timer(win, single_timer)
@@ -459,8 +474,8 @@ def draw(win, images, player_car, player_car2, multiplayer, single_timer, lap_co
 
 running = True
 clock = pygame.time.Clock()
-player_car = PlayerCar(4, 2)
-player_car2 = PlayerCar2(4, 2)
+player_car = PlayerCar(4.5, 2)
+player_car2 = PlayerCar2(4.5, 2)
 
 lap_count = 0
 lap_count2 = 0
@@ -473,9 +488,8 @@ selected_track = track_array[array_num]
 selected_border = border_array[array_num]
 TRACK_BORDER_MASK = pygame.mask.from_surface(selected_border)
 images = [(GRASS, (0, 0)), (selected_track, (0, 0)), (FINISH, FINISH_POSITION), (selected_border, (0, 0))]
-#Videoserie: Pygame Car Racing Tutorial
 single_timer = 0  # Timer nach dem Countdown starten
-
+#Videoserie: Pygame Car Racing Tutorial
 while running:
     if not pygame.mixer.music.get_busy() and go_played:
         pygame.mixer.music.play()
@@ -607,6 +621,7 @@ while running:
     if finish_point_of_collision != None and colliding_with_finish == False:
         if finish_point_of_collision[1] == 0:
             player_car.reset()
+
 
 
 

@@ -130,7 +130,7 @@ def end_screen(multiplayer):
     button_exit = pygame.Rect(WIDTH // 2 - 150, HEIGHT // 2 + 50, 300, 60)
     button_options_screen = pygame.Rect(WIDTH // 2 - 150, HEIGHT // 2 + 130, 300, 60)
     while True:
-        WIN.fill((144, 238, 144))  # Schwarzer Hintergrund
+        WIN.fill((144, 238, 144)) 
         draw_text(player, font, (255, 255, 255), WIN, WIDTH// 2, HEIGHT // 4)
         pygame.mixer.music.stop()
 
@@ -245,7 +245,6 @@ BORDERS_2 = pygame.image.load("Sprites/Track2border....png")
 BORDERS_3 = pygame.image.load("Sprites/Border3-Photoroom.png")
 BORDERS_4 = pygame.image.load("Sprites/Border4-Photoroom.png")
 GRASS = scale_image(pygame.image.load("Sprites/Hintergrund neu.png"), 1)
-PCAR = scale_image(pygame.image.load("Sprites/purple-car.png"), 0.8)
 RCAR = scale_image(pygame.image.load("Sprites/red-car.png"), 0.5)
 WCAR = scale_image(pygame.image.load("Sprites/white-car.png"), 0.8)
 TRACK_1 = pygame.image.load("Sprites/Track-Photoroom.png")
